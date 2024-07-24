@@ -47,8 +47,8 @@ react {
     //   The hermes compiler command to run. By default it is 'hermesc'
     // hermesCommand = "$rootDir/my-custom-hermesc/bin/hermesc"
     //
-    //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
-    // hermesFlags = ["-O", "-output-source-map"]
+    //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map.js"
+    // hermesFlags = ["-O", "-output-source-map.js"]
 }
 
 /**
@@ -112,6 +112,10 @@ dependencies {
         implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor
+    }
+
+    implementation(project(':react-native-amap-geolocation')) {
+        exclude group: 'com.amap.api', module: 'location'
     }
 }
 

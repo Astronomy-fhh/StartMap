@@ -1,23 +1,29 @@
-// reducers/index.js
-import { combineReducers } from 'redux';
+import {init} from '@rematch/core';
+import createPersistPlugin, {getPersistor} from '@rematch/persist';
+import createLoadingPlugin from '@rematch/loading';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {models} from '../models';
 
-// 示例 reducer
-const initialState = {
-  example: 'Hello, Redux!',
+// Create plugins
+const persistPlugin = createPersistPlugin({
+  key: 'root',
+  storage: AsyncStorage,
+  blacklist: [],
+});
+const loadingPlugin = createLoadingPlugin({});
+
+const localStore = () => {
+  const store = init({
+    models,
+    redux: {
+      middlewares: [],
+    },
+    plugins: [persistPlugin, loadingPlugin],
+  });
+
+  const local = getPersistor();
+
+  return {local, store};
 };
 
-function exampleReducer(state = initialState, action) {
-  switch (action.type) {
-    case 'SET_EXAMPLE':
-      return { ...state, example: action.payload };
-    default:
-      return state;
-  }
-}
-
-// 组合所有的 reducers
-const rootReducer = combineReducers({
-  example: exampleReducer,
-});
-
-export default rootReducer;
+export default localStore;
