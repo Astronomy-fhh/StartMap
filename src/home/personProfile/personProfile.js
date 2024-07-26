@@ -135,20 +135,14 @@ const FirstRoute = () => (
   />
 );
 
-const SecondRoute = () => (
-  <FlatList
-    data={listData}
-    renderItem={renderCard}
-    keyExtractor={item => item.id}
-    contentContainerStyle={styles.list}
-  />
-);
+const SecondRoute = () => <Text>111</Text>;
 
 const PersonalProfile = () => {
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
-    {key: 'first', title: '轨迹'},
-    {key: 'second', title: 'Star'},
+    {key: 'first', title: '记录'},
+    {key: 'second', title: '轨迹'},
+    {key: 'fourth', title: '探索轨迹'},
   ]);
 
   const CustomTabBar = props => (
@@ -183,6 +177,8 @@ const PersonalProfile = () => {
         renderScene={SceneMap({
           first: FirstRoute,
           second: SecondRoute,
+          third: SecondRoute,
+          fourth: SecondRoute,
         })}
         onIndexChange={setIndex}
         initialLayout={initialLayout}
@@ -209,11 +205,11 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   avatar: {
-    borderRadius: 70,
+    borderRadius: 60,
     borderWidth: 2,
     borderColor: '#fff',
-    width: 70,
-    height: 70,
+    width: 60,
+    height: 60,
   },
   name: {
     fontSize: 24,

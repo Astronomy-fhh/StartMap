@@ -9,6 +9,7 @@ import Loading from './components/UI/Loading';
 import {PersistGate} from 'redux-persist/es/integration/react';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import FloatingDebugButton from './debug/debug';
+import { StatusBar } from "react-native";
 
 class App extends React.Component {
   constructor() {
@@ -32,6 +33,7 @@ class App extends React.Component {
       <SafeAreaProvider>
         <Provider store={store}>
           <PersistGate loading={<Loading />} persistor={local}>
+            <StatusBar barStyle="light-content" backgroundColor="#6200ee" />
             <GestureHandlerRootView>
               <FloatingDebugButton />
               <NavigationContainer>{Routes}</NavigationContainer>

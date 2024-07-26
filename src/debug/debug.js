@@ -51,6 +51,13 @@ const FloatingDebugButton = () => {
     });
   };
 
+
+  const logTrkStart = async () => {
+    const value = await AsyncStorage.getItem('persist:root');
+    const parsedValue = JSON.parse(value);
+    console.log('Debug AsyncStorage content:', parsedValue.trkStart);
+  };
+
   return (
     <View
       {...panResponder.panHandlers}
@@ -60,6 +67,9 @@ const FloatingDebugButton = () => {
       </TouchableOpacity>
       {isDropdownVisible && (
         <View style={styles.dropdown}>
+          <TouchableOpacity onPress={logTrkStart} style={styles.dropdownButton}>
+            <Text style={styles.buttonText}>打印trkStart</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={logAsyncStorageContent}
             style={styles.dropdownButton}>

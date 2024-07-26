@@ -1,5 +1,4 @@
 import {createGpx} from './other.tsx';
-import generateTrackImage from "../../components/UI/CapturePathDrawing";
 
 export const trkModel = {
   state: {
