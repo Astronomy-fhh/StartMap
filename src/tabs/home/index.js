@@ -1,12 +1,12 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import PersonalProfile from './personProfile/personProfile';
+import Person from './head/Person';
 
 class HomeScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <PersonalProfile />
+        <Person />
       </View>
     );
   }

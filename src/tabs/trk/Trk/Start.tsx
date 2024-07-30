@@ -8,9 +8,18 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
+import BottomSheet, {
+  BottomSheetView,
+  useBottomSheetTimingConfigs,
+} from '@gorhom/bottom-sheet';
 import {connect} from 'react-redux';
-
+import {Easing} from 'react-native-reanimated';
+import GeoLocation from '../Map/GeoLocation.tsx';
+import {
+  Location,
+  ReGeocode,
+  LocationType,
+} from 'react-native-amap-geolocation/src/types.ts';
 const TrkStartScreen = (props: any) => {
   console.log('TrkStartScreen', props);
 
@@ -18,22 +27,66 @@ const TrkStartScreen = (props: any) => {
     console.log('handleSheetChanges', index);
   };
   const bottomSheetRef = useRef(null);
+  const {startLocation, stopLocation, addLocationListen} = GeoLocation();
 
   const startHandle = () => {
+    stopLocation();
+    startLocation();
+    addLocationListen((location: Location & ReGeocode) => {
+      console.log('trking location listen', location);
+      if (location.errorCode) {
+        console.log('trking location listen error', location.errorInfo);
+        return;
+      }
+      if (location.locationType !== LocationType.GPS) {
+        console.log('trking location listen warn', 'locationType is not GPS');
+        //return;
+      }
+      const currentTrkPoint = {
+        latitude: location.latitude,
+        longitude: location.longitude,
+        altitude: location.altitude,
+        speed: location.speed,
+        timestamp: location.timestamp,
+        pause: false,
+      };
+      props.checkAddTrkPoint(currentTrkPoint);
+      props.setCurrentPoint(currentTrkPoint);
+    });
     props.setStart(true);
   };
+
+  const animationConfigs = useBottomSheetTimingConfigs({
+    duration: 100,
+    easing: Easing.exp,
+  });
 
   return (
     <BottomSheet
       ref={bottomSheetRef}
+      index={1}
       onChange={handleSheetChanges}
-      snapPoints={['16%']}>
+      detached={false}
+      enableDynamicSizing={false}
+      animationConfigs={animationConfigs}
+      handleIndicatorStyle={{
+        backgroundColor: 'rgba(193,192,192,0.32)',
+      }}
+      backgroundStyle={{
+        backgroundColor: '#fff',
+      }}
+      snapPoints={['4%', '17%']}>
       <BottomSheetView>
         <View style={styles.bottomBtnLine}>
           <TouchableOpacity
             style={[styles.startItemOpBtn, styles.startItemOpBtnBgStart]}
             onPress={startHandle}>
-            <Text style={styles.startButtonText}>开始</Text>
+            <Text style={styles.startButtonText}>添加轨迹</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.startItemOpBtn, styles.startItemOpBtnBgStart]}
+            onPress={startHandle}>
+            <Text style={styles.startButtonText}>开始记录</Text>
           </TouchableOpacity>
         </View>
       </BottomSheetView>
@@ -42,12 +95,7 @@ const TrkStartScreen = (props: any) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'grey',
-  },
+  container: {},
   map: {
     width: '100%',
     height: '100%',
@@ -109,15 +157,15 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   startItemOpBtn: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 160,
+    height: 80,
+    borderRadius: 26,
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 20,
   },
   startItemOpBtnBgStart: {
-    backgroundColor: 'rgba(27,27,27,0.88)',
+    backgroundColor: '#000',
   },
   startItemOpBtnBgPause: {
     backgroundColor: '#ff8c00',
@@ -128,16 +176,15 @@ const styles = StyleSheet.create({
 
   startButtonText: {
     color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 20,
   },
   bottomBtnLine: {
-    width: '100%',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     height: '100%',
+    paddingBottom: 20,
   },
 });
 
@@ -148,7 +195,9 @@ const stateToProps = (state: any) => {
 };
 
 const dispatchToProps = dispatch => ({
-  addTrkPoints: (payload: any) => dispatch.trkStart.addTrkPoints(payload),
+  setCurrentPoint: (payload: any) => dispatch.trkStart.setCurrentPoint(payload),
+  checkAddTrkPoint: (payload: any) =>
+    dispatch.trkStart.checkAddTrkPoint(payload),
   setStart: (payload: any) => dispatch.trkStart.setStart(payload),
   setPause: (payload: any) => dispatch.trkStart.setPause(payload),
 });

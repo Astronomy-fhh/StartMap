@@ -1,9 +1,7 @@
-import {mapModel} from './map/map';
-import {trkModel} from './trk/trk';
+import {RecordListModel} from './record/recordList';
 import {trkStartModel} from './trk/trkStart';
 
 export const models = {
   trkStart: trkStartModel,
-  map: mapModel,
-  trk: trkModel,
+  recordList: RecordListModel,
 };

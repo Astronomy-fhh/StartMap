@@ -9,7 +9,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const FloatingDebugButton = () => {
-  const [position, setPosition] = useState({x: 50, y: 50});
+  const [position, setPosition] = useState({x: 200, y: 50});
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
   const panResponder = PanResponder.create({
@@ -58,6 +58,11 @@ const FloatingDebugButton = () => {
     console.log('Debug AsyncStorage content:', parsedValue.trkStart);
   };
 
+  const logClean = async () => {
+    await AsyncStorage.clear();
+    console.log('AsyncStorage cleaned');
+  };
+
   return (
     <View
       {...panResponder.panHandlers}
@@ -65,8 +70,11 @@ const FloatingDebugButton = () => {
       <TouchableOpacity onPress={toggleDropdown}>
         <Text style={styles.buttonText}>Debug</Text>
       </TouchableOpacity>
-      {isDropdownVisible && (
+      {isDropdownVisible ? (
         <View style={styles.dropdown}>
+          <TouchableOpacity onPress={logClean} style={styles.dropdownButton}>
+            <Text style={styles.buttonText}>清理storage</Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={logTrkStart} style={styles.dropdownButton}>
             <Text style={styles.buttonText}>打印trkStart</Text>
           </TouchableOpacity>
@@ -77,7 +85,7 @@ const FloatingDebugButton = () => {
           </TouchableOpacity>
           {/* Add more buttons here */}
         </View>
-      )}
+      ) : null}
     </View>
   );
 };
@@ -89,6 +97,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     zIndex: 1000,
+    paddingTop: 50,
   },
   buttonText: {
     color: 'white',

@@ -18,7 +18,6 @@ class App extends React.Component {
   }
 
   async componentDidMount() {
-    // SplashScreen.hide();
     this.setState({loading: false});
   }
 
@@ -33,7 +32,7 @@ class App extends React.Component {
       <SafeAreaProvider>
         <Provider store={store}>
           <PersistGate loading={<Loading />} persistor={local}>
-            <StatusBar barStyle="light-content" backgroundColor="#6200ee" />
+            <StatusBar barStyle="light-content" backgroundColor="#fff" />
             <GestureHandlerRootView>
               <FloatingDebugButton />
               <NavigationContainer>{Routes}</NavigationContainer>

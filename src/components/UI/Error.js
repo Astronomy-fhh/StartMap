@@ -11,11 +11,11 @@ const Error = ({ title, content, tryAgain }) => (
       <Spacer size={20} />
       <H3 style={{ textAlign: 'center' }}>{title}</H3>
       <Text style={{ textAlign: 'center', marginBottom: 20 }}>{content}</Text>
-      {tryAgain && (
-        <Button block onPress={tryAgain}>
-          <Text>Try Again</Text>
-        </Button>
-      )}
+      {/*{tryAgain && (*/}
+      {/*  <Button block onPress={tryAgain}>*/}
+      {/*    <Text>Try Again</Text>*/}
+      {/*  </Button>*/}
+      {/*)}*/}
       <Spacer size={20} />
     </View>
   </Container>

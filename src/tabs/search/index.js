@@ -1,11 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View } from "react-native";
+import {StyleSheet, Text, View } from "react-native";
+import TrkList from "./trkList/TrkList";
 
 class SearchScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>Search Screen</Text>
+        <TrkList />
       </View>
     );
   }
@@ -13,9 +14,8 @@ class SearchScreen extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    height: '100%',
+    width: '100%',
   },
 });
 

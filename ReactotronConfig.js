@@ -8,7 +8,6 @@ Reactotron.setAsyncStorageHandler(AsyncStorage)
   .useReactNative({
     asyncStorage: false, // there are more options to the async storage.
     networking: {
-      // optionally, you can turn it off with false.
       ignoreUrls: false,
     },
     editor: false, // there are more options to editor

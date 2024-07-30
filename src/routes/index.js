@@ -1,14 +1,14 @@
 import 'react-native-gesture-handler';
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {View, Text, StyleSheet} from 'react-native';
+import { View, Text, StyleSheet, Settings } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
 
-import HomeScreen from '../home';
-import StartScreen from '../start';
-import TrkScreen from '../trk';
+import HomeScreen from '../tabs/home';
+import TrkScreen from '../tabs/trk';
 
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import SearchScreen from '../tabs/search';
 
 const Tab = createBottomTabNavigator();
 
@@ -17,10 +17,16 @@ function MainTab() {
     <Tab.Navigator
       screenOptions={({route}) => ({
         headerShown: false,
+        tabBarActiveTintColor: '#b3c63f',
+        tabBarStyle: {
+          backgroundColor: '#fff',
+          borderTopWidth: 0,
+          height: 50,
+        },
       })}>
       <Tab.Screen
-        name="search"
-        component={TrkScreen}
+        name="star"
+        component={SearchScreen}
         options={{
           title: '探索',
           tabBarLabel: ({focused, color}) => (
@@ -38,26 +44,27 @@ function MainTab() {
         }}
       />
       <Tab.Screen
-        name="start"
-        component={StartScreen}
+        name="trk"
+        component={TrkScreen}
         options={{
+          tabBarStyle: {
+            display: 'none',
+          },
           title: '开始',
-          tabBarLabel: ({focused, color}) => (
-            <Text style={[styles.tabLabel, {color}]}>
-              {focused ? '开始' : '开始'}
-            </Text>
-          ),
+          tabBarLabelStyle: {
+            display: 'none',
+          },
           tabBarIcon: ({focused, color, size}) => (
             <Icon
-              name={focused ? 'accessibility' : 'accessibility-outline'}
-              size={size}
+              name={focused ? 'navigate' : 'navigate-outline'}
+              size={34}
               color={color}
             />
           ),
         }}
       />
       <Tab.Screen
-        name="me"
+        name="home"
         component={HomeScreen}
         options={{
           title: '我的',
@@ -99,8 +106,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tabLabel: {
+    fontSize: 12,
+    marginBottom: 6,
+    color: '#932c2c',
+  },
+  tabLabelFocus: {
     fontSize: 10,
-    marginBottom: 6, // 调整此值以控制标题距离底部的位置
+    marginBottom: 6,
+    color: 'yellow',
   },
   tabIcon: {},
 });
