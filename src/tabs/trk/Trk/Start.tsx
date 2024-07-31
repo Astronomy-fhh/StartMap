@@ -50,6 +50,15 @@ const TrkStartScreen = (props: any) => {
         timestamp: location.timestamp,
         pause: false,
       };
+      // 记录第一个点的位置详情
+      if (props.trkStart.locationInfo.address === undefined) {
+        props.setLocationInfo({
+          address: location.address,
+          country: location.country,
+          city: location.city,
+          adCode: location.adCode,
+        });
+      }
       props.checkAddTrkPoint(currentTrkPoint);
       props.setCurrentPoint(currentTrkPoint);
     });
@@ -200,6 +209,7 @@ const dispatchToProps = dispatch => ({
     dispatch.trkStart.checkAddTrkPoint(payload),
   setStart: (payload: any) => dispatch.trkStart.setStart(payload),
   setPause: (payload: any) => dispatch.trkStart.setPause(payload),
+  setLocationInfo: (payload: any) => dispatch.trkStart.setLocationInfo(payload),
 });
 
 export default connect(stateToProps, dispatchToProps)(TrkStartScreen);

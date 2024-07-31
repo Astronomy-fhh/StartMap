@@ -62,8 +62,8 @@ export function calculateTrkStats(data) {
     if (currentKilometerDistance >= 1000) {
       const kmSpeed =
         currentKilometerDistance / 1000 / (currentKilometerTime / 3600); // 计算公里速度，单位为 km/h
-      const speedInSecondsPerKm = 3600 / kmSpeed; // 转换为秒每公里
-      kilometerSpeeds.push(speedInSecondsPerKm); // 保存当前公里速度
+      // const speedInSecondsPerKm = 3600 / kmSpeed; // 转换为秒每公里
+      kilometerSpeeds.push(kmSpeed); // 保存当前公里速度
       currentKilometerDistance = 0; // 重置当前公里距离
       currentKilometerTime = 0; // 重置当前公里时间
     }
@@ -92,8 +92,8 @@ export function calculateTrkStats(data) {
   if (currentKilometerDistance > 0) {
     const lastKmSpeed =
       currentKilometerDistance / 1000 / (currentKilometerTime / 3600);
-    const lastSpeedInSecondsPerKm = 3600 / lastKmSpeed; // 转换为秒每公里
-    kilometerSpeeds.push(lastSpeedInSecondsPerKm);
+    // const lastSpeedInSecondsPerKm = 3600 / lastKmSpeed; // 转换为秒每公里
+    kilometerSpeeds.push(lastKmSpeed);
   }
 
   const currentKilometerSpeed =

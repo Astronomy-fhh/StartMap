@@ -19,8 +19,15 @@ export const trkStartModel = {
     mapType: MapType.Night,
     currentPoint: {} as TrkPointST,
     trkPoints: [] as TrkPointST[],
+    locationInfo: {},
   },
   reducers: {
+    setLocationInfo(state: any, payload: any) {
+      return {
+        ...state,
+        locationInfo: payload,
+      };
+    },
     setTrkPoints(state: any, payload: TrkPointST[]) {
       return {
         ...state,
@@ -70,6 +77,7 @@ export const trkStartModel = {
           pause: false,
           pauseTime: now,
           duration: 0,
+          locationInfo: {},
         };
       } else {
         return {

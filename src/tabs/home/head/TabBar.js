@@ -1,5 +1,6 @@
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import RecordList from "../list/RecordList";
 
 const TabBar = () => {
   const Tab = createMaterialTopTabNavigator();
@@ -72,7 +73,7 @@ const TabBar = () => {
 
   return (
     <Tab.Navigator tabBar={props => <MyTabBar {...props} />}>
-      <Tab.Screen name="记录" component={HomeScreen} />
+      <Tab.Screen name="记录" component={RecordList} />
       <Tab.Screen name="轨迹" component={SettingsScreen} />
       <Tab.Screen name="Star" component={SettingsScreen} />
       <Tab.Screen name="动态" component={SettingsScreen} />
@@ -86,6 +87,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     backgroundColor: '#fff',
     paddingVertical: 10,
+    paddingHorizontal: 10,
   },
   tabButton: {
     width: '23%',

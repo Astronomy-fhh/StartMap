@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import moment from 'moment';
 import { formatMinutesToTime } from "../../../utils/format";
 
-const TrkList = props => {
+const RecordList = props => {
   const [data, setData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -13,7 +13,7 @@ const TrkList = props => {
 
   useEffect(() => {
     onRefresh();
-  }, []);
+  }, [props]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -28,7 +28,7 @@ const TrkList = props => {
         console.error('Error fetching data:', error);
         setRefreshing(false);
       });
-  }, [props]);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -51,7 +51,7 @@ const TrkList = props => {
                   {item.country} {item.city}
                 </Text>
                 <Text style={{fontSize: 12, color: '#000'}}>
-                  {moment(item.startTime).format('YYYY-MM-DD HH:mm')}
+                  {moment(item.endTime).format('YYYY-MM-DD HH:mm')}
                 </Text>
               </View>
               {/*<View*/}
@@ -155,24 +155,28 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
     paddingTop: 20,
+    backgroundColor: '#f4f4f4',
   },
   item: {
     flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    height: 130,
+    height: 100,
     marginHorizontal: 20,
     marginVertical: 10,
-    borderRadius: 10,
-    borderColor: 'gray',
-    borderWidth: 1,
     paddingTop: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
 });
 
 const stateToProps = state => {
   return {
-    recordList : state.recordList,
+    recordList: state.recordList,
   };
 };
 
@@ -180,4 +184,4 @@ const dispatchToProps = dispatch => ({
   getTrkList: payload => dispatch.recordList.getList(payload),
 });
 
-export default connect(stateToProps, dispatchToProps)(TrkList);
+export default connect(stateToProps, dispatchToProps)(RecordList);

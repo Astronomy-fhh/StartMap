@@ -73,9 +73,7 @@ const TrkStartingScreen = (props: any) => {
       setTotalAscentVal(totalAscent.toFixed(0));
       setTotalDescentVal(totalDescent.toFixed(0));
       setKilometerSpeedsVal(kilometerSpeeds);
-      setCurrentKilometerSpeedVal(
-        formatMinutesToSeconds(currentKilometerSpeed.toFixed(0)),
-      );
+      setCurrentKilometerSpeedVal(currentKilometerSpeed.toFixed(2));
       setCurrentAltitudeVal(currentAltitude.toFixed(0));
       finalPointIsPausedVal.current = finalPointIsPaused;
       totalTimeVal.current = totalTime;
@@ -118,6 +116,7 @@ const TrkStartingScreen = (props: any) => {
       startTime: startTime,
       endTime: new Date().toISOString(),
       points: props.trkStart.trkPoints,
+      locationInfo: props.trkStart.locationInfo,
     });
     props.setTrkPoints([]);
   };
@@ -175,9 +174,9 @@ const TrkStartingScreen = (props: any) => {
             <View style={styles.startItemColumn}>
               <Text style={styles.startItemValue}>
                 {currentKilometerSpeedVal}
-                <Text style={styles.startItemUnit}> </Text>
+                <Text style={styles.startItemUnit}> kph</Text>
               </Text>
-              <Text style={styles.startItemLabel}>速度 sm/km</Text>
+              <Text style={styles.startItemLabel}>速度</Text>
             </View>
             <View style={styles.startItemColumnRight}>
               <Text style={styles.startItemValue}>
