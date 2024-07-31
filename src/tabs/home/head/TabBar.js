@@ -55,12 +55,17 @@ const TabBar = () => {
               onPress={onPress}
               style={[
                 styles.tabButton,
-                {backgroundColor: isFocused ? '#000' : '#000'},
+                // {backgroundColor: isFocused ? '#000' : '#000'},
               ]}>
               <Text
                 style={[
                   styles.tabText,
-                  {color: isFocused ? '#b3c63f' : '#fff'},
+                  {
+                    paddingBottom: 3,
+                    color: isFocused ? '#b3c63f' : '#000',
+                    borderBottomColor: isFocused ? '#b3c63f' : '#fff',
+                    borderBottomWidth: 1,
+                  },
                 ]}>
                 {label}
               </Text>
@@ -74,9 +79,8 @@ const TabBar = () => {
   return (
     <Tab.Navigator tabBar={props => <MyTabBar {...props} />}>
       <Tab.Screen name="记录" component={RecordList} />
-      <Tab.Screen name="轨迹" component={SettingsScreen} />
-      <Tab.Screen name="Star" component={SettingsScreen} />
-      <Tab.Screen name="动态" component={SettingsScreen} />
+      <Tab.Screen name="路线" component={SettingsScreen} />
+      <Tab.Screen name="STAR" component={SettingsScreen} />
     </Tab.Navigator>
   );
 };
@@ -86,19 +90,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     backgroundColor: '#fff',
-    paddingVertical: 10,
+    paddingVertical: 0,
     paddingHorizontal: 10,
   },
   tabButton: {
     width: '23%',
     alignItems: 'center',
     borderRadius: 13,
-    paddingVertical: 15,
+    paddingBottom: 10,
     paddingHorizontal: '5%',
   },
   tabText: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 16,
   },
 });
 

@@ -1,4 +1,4 @@
-import {Image, Text, TouchableOpacity, View, StyleSheet} from 'react-native';
+import { Image, Text, TouchableOpacity, View, StyleSheet, ScrollView } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
 import React from 'react';
 import TabBar from './TabBar';
@@ -13,7 +13,7 @@ const Person = () => {
         <TouchableOpacity>
           <Icon
             name="scan-outline"
-            size={30}
+            size={20}
             color={'#000'}
             style={styles.icon}
           />
@@ -21,7 +21,7 @@ const Person = () => {
         <TouchableOpacity>
           <Icon
             name="settings-outline"
-            size={30}
+            size={20}
             color={'#000'}
             style={styles.icon}
           />
@@ -40,12 +40,12 @@ const Person = () => {
         </View>
         <View style={styles.stats}>
           <View style={styles.statText}>
-            <Text style={styles.statName}>Star:</Text>
             <Text style={styles.statValue}>1.2w</Text>
+            <Text style={styles.statName}>Star</Text>
           </View>
           <View style={styles.statText}>
-            <Text style={styles.statName}>下载:</Text>
             <Text style={styles.statValue}>2056</Text>
+            <Text style={styles.statName}>下载</Text>
           </View>
         </View>
       </View>
@@ -60,10 +60,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
-    marginTop: 10,
+    backgroundColor: '#fff',
   },
   header: {
-    height: 50,
     marginHorizontal: 10,
     marginTop: 5,
     flexDirection: 'row',
@@ -74,12 +73,11 @@ const styles = StyleSheet.create({
     paddingRight: 20,
   },
   profileContainer: {
-    backgroundColor: '#000',
-    height: 140,
     marginHorizontal: 10,
     marginTop: 5,
     borderRadius: 20,
     padding: 15,
+    height: 150,
   },
   profileHeader: {
     flexDirection: 'row',
@@ -88,7 +86,7 @@ const styles = StyleSheet.create({
   profileImage: {
     borderRadius: 35,
     borderWidth: 2,
-    borderColor: '#fff',
+    borderColor: 'white',
     width: 70,
     height: 70,
   },
@@ -99,7 +97,7 @@ const styles = StyleSheet.create({
   },
   profileName: {
     fontSize: 23,
-    color: '#d5e18c',
+    color: '#000',
     fontWeight: 'bold',
   },
   certification: {
@@ -109,18 +107,17 @@ const styles = StyleSheet.create({
   },
   certificationText: {
     fontSize: 14,
-    color: '#868a6c',
+    color: '#1b1a1a',
     paddingLeft: 5,
   },
   stats: {
-    flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
-    marginTop: 10,
   },
   statText: {
-    flexDirection: 'row',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     fontSize: 16,
     color: '#fff',
     paddingHorizontal: 15,
@@ -129,8 +126,8 @@ const styles = StyleSheet.create({
     color: '#868a6c',
   },
   statValue: {
-    color: '#b3c63f',
-    paddingLeft: 5,
+    color: '#000',
+    fontSize: 18,
   },
 });
 

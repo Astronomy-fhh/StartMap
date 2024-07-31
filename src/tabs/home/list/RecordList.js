@@ -1,8 +1,16 @@
 import React, {useState, useCallback, useEffect} from 'react';
-import { FlatList, Text, View, RefreshControl, StyleSheet, TouchableOpacity, Image } from "react-native";
+import {
+  FlatList,
+  Text,
+  View,
+  RefreshControl,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import {connect} from 'react-redux';
 import moment from 'moment';
-import { formatMinutesToTime } from "../../../utils/format";
+import {formatMinutesToTime} from '../../../utils/format';
 
 const RecordList = props => {
   const [data, setData] = useState([]);
@@ -37,103 +45,149 @@ const RecordList = props => {
         data={data}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({item}) => (
-          <TouchableOpacity>
-            <View style={styles.item}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  width: '100%',
-                  paddingLeft: 10,
-                  paddingRight: 10,
-                }}>
-                <Text style={{fontSize: 12, color: '#000'}}>
-                  {item.country} {item.city}
-                </Text>
-                <Text style={{fontSize: 12, color: '#000'}}>
-                  {moment(item.endTime).format('YYYY-MM-DD HH:mm')}
-                </Text>
-              </View>
-              {/*<View*/}
-              {/*  style={{*/}
-              {/*    flexDirection: 'row',*/}
-              {/*    justifyContent: 'space-between',*/}
-              {/*    width: '100%',*/}
-              {/*    paddingLeft: 10,*/}
-              {/*    paddingRight: 10,*/}
-              {/*  }}>*/}
-              {/*  <Text style={{fontSize: 15, color: '#000'}}>*/}
-              {/*    {item.title}*/}
-              {/*  </Text>*/}
-              {/*</View>*/}
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  width: '100%',
-                  paddingLeft: 10,
-                  paddingRight: 10,
-                  paddingBottom: 5,
-                }}>
+          <View>
+            <TouchableOpacity>
+              <View style={styles.item}>
                 <View
                   style={{
-                    flexDirection: 'column',
+                    flexDirection: 'row',
                     justifyContent: 'flex-start',
+                    width: '100%',
+                    paddingLeft: 10,
+                    paddingRight: 10,
+                    paddingTop: 5,
                   }}>
-                  <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
-                    <Text style={{fontSize: 22, color: '#000', fontWeight: '700'}}>
-                      {item.distance.toFixed(2)}
-                    </Text>
-                    <Text style={{fontSize: 18, color: '#000', paddingLeft: 5}}>
-                      km
-                    </Text>
-                  </View>
-                  <Text style={{fontSize: 14, color: '#000'}}>总距离</Text>
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: 'column',
-                    justifyContent: 'flex-start',
-                  }}>
-                  <Text style={{fontSize: 22, color: '#000', fontWeight: '700'}}>
-                    {formatMinutesToTime(item.useTime.toFixed(0))}
+                  <Text style={{fontSize: 14, color: '#000'}}>
+                    {moment(item.endTime).format('YYYY年MM月DD日 HH:mm  ')}
                   </Text>
-                  <Text style={{fontSize: 14, color: '#000'}}>用时</Text>
+                  {/*<Text style={{fontSize: 14, color: '#000'}}>*/}
+                  {/*  {item.country} {item.city}*/}
+                  {/*</Text>*/}
                 </View>
                 <View
                   style={{
-                    flexDirection: 'column',
+                    flexDirection: 'row',
                     justifyContent: 'flex-start',
+                    width: '100%',
+                    paddingLeft: 10,
+                    paddingRight: 10,
                   }}>
-                  <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
-                    <Text style={{fontSize: 22, color: '#000', fontWeight: '700'}}>
-                      {item.ascent.toFixed(0)}
-                    </Text>
-                    <Text style={{fontSize: 18, color: '#000', paddingLeft: 5}}>
-                      m
-                    </Text>
-                  </View>
-                  <Text style={{fontSize: 14, color: '#000'}}>爬升</Text>
+                  <Text style={{fontSize: 12, color: '#000'}}>
+                    {item.title}
+                  </Text>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'column',
+                    flexDirection: 'row',
                     justifyContent: 'flex-start',
+                    width: '100%',
+                    paddingLeft: 10,
+                    paddingRight: 10,
+                    paddingBottom: 10,
                   }}>
-                  <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
-                    <Text style={{fontSize: 22, color: '#000', fontWeight: '700'}}>
-                      {item.descent.toFixed(0)}
-                    </Text>
-                    <Text style={{fontSize: 18, color: '#000', paddingLeft: 5}}>
-                      m
-                    </Text>
+                  <View
+                    style={{
+                      flexDirection: 'column',
+                      justifyContent: 'flex-start',
+                    }}>
+                    <Text style={{fontSize: 14, color: '#575757'}}>距离</Text>
+                    <View
+                      style={{flexDirection: 'row', alignItems: 'flex-end'}}>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          color: '#000',
+                          fontWeight: '700',
+                        }}>
+                        {item.distance.toFixed(2)}
+                      </Text>
+                      <Text
+                        style={{fontSize: 15, color: '#000', paddingLeft: 5}}>
+                        km
+                      </Text>
+                    </View>
                   </View>
-                  <Text style={{fontSize: 14, color: '#000'}}>下降</Text>
+
+                  <View style={styles.separator} />
+
+                  <View
+                    style={{
+                      flexDirection: 'column',
+                      justifyContent: 'flex-start',
+                    }}>
+                    <Text style={{fontSize: 14, color: '#575757'}}>时间</Text>
+                    <View
+                      style={{flexDirection: 'row', alignItems: 'flex-end'}}>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          color: '#000',
+                          fontWeight: '700',
+                        }}>
+                        {item.distance.toFixed(2)}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          color: '#000',
+                          paddingLeft: 5,
+                        }}
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.separator} />
+
+                  <View
+                    style={{
+                      flexDirection: 'column',
+                      justifyContent: 'flex-start',
+                    }}>
+                    <Text style={{fontSize: 14, color: '#575757'}}>爬升</Text>
+                    <View
+                      style={{flexDirection: 'row', alignItems: 'flex-end'}}>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          color: '#000',
+                          fontWeight: '700',
+                        }}>
+                        {item.ascent.toFixed(0)}
+                      </Text>
+                      <Text
+                        style={{fontSize: 15, color: '#000', paddingLeft: 5}}>
+                        m
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.separator} />
+
+                  <View
+                    style={{
+                      flexDirection: 'column',
+                      justifyContent: 'flex-start',
+                    }}>
+                    <Text style={{fontSize: 14, color: '#575757'}}>下降</Text>
+                    <View
+                      style={{flexDirection: 'row', alignItems: 'flex-end'}}>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          color: '#000',
+                          fontWeight: '700',
+                        }}>
+                        {item.descent.toFixed(0)}
+                      </Text>
+                      <Text
+                        style={{fontSize: 15, color: '#000', paddingLeft: 5}}>
+                        m
+                      </Text>
+                    </View>
+                  </View>
                 </View>
               </View>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+            <View style={styles.separator2} />
+          </View>
         )}
         refreshControl={
           <RefreshControl
@@ -155,22 +209,35 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
     paddingTop: 20,
-    backgroundColor: '#f4f4f4',
+    backgroundColor: '#fff',
   },
   item: {
     flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    height: 100,
+    height: 110,
     marginHorizontal: 20,
     marginVertical: 10,
-    paddingTop: 10,
+    paddingTop: 5,
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#ddd',
+    // borderWidth: 1,
+    borderColor: '#757575',
     shadowColor: '#000',
     shadowOpacity: 0.3,
     shadowRadius: 4,
+    backgroundColor: '#ececec',
+  },
+  separator: {
+    width: 1,
+    backgroundColor: '#cdcdcd',
+    marginHorizontal: 20,
+    marginVertical: 3,
+  },
+  separator2: {
+    height: 1,
+    backgroundColor: '#cdcdcd',
+    marginHorizontal: 20,
+    marginVertical: 3,
   },
 });
 

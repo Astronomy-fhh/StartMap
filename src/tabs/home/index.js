@@ -1,6 +1,7 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import Person from './head/Person';
+import PersonScroll from "./head/PersonScroll";
 
 class HomeScreen extends React.Component {
   render() {
