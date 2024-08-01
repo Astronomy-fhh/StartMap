@@ -9,6 +9,8 @@ import TrkScreen from '../tabs/trk';
 
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SearchScreen from '../tabs/search';
+import RecordDetail from '../tabs/home/list/RecordDetail';
+import Debug from "../debug/debug";
 
 const Tab = createBottomTabNavigator();
 
@@ -24,6 +26,29 @@ function MainTab() {
           height: 50,
         },
       })}>
+      <Tab.Screen
+        name="recordDetail"
+        component={RecordDetail}
+        options={{
+          tabBarStyle: {
+            display: 'none',
+          },
+          headerTitle: 'recordDetail',
+          title: 'recordDetail',
+          tabBarLabel: ({focused, color}) => (
+            <Text style={[styles.tabLabel, {color}]}>
+              {focused ? '探索' : '探索'}
+            </Text>
+          ),
+          tabBarIcon: ({focused, color, size}) => (
+            <Icon
+              name={focused ? 'star' : 'star-outline'}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
       <Tab.Screen
         name="star"
         component={SearchScreen}
@@ -95,6 +120,18 @@ const Index = (
       name="Home"
       component={MainTab}
       options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="RecordDetail"
+      component={RecordDetail}
+      options={{
+        headerTitle: '记录详情',
+        headerTitleStyle: {
+          color: '#000',
+          fontWeight: 'normal',
+          fontSize: 18,
+        },
+      }}
     />
   </Stack.Navigator>
 );

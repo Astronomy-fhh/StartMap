@@ -37,15 +37,15 @@ const Person = () => {
               <Text style={styles.certificationText}>专业户外认证</Text>
             </View>
           </View>
-        </View>
-        <View style={styles.stats}>
-          <View style={styles.statText}>
-            <Text style={styles.statValue}>1.2w</Text>
-            <Text style={styles.statName}>Star</Text>
-          </View>
-          <View style={styles.statText}>
-            <Text style={styles.statValue}>2056</Text>
-            <Text style={styles.statName}>下载</Text>
+          <View style={styles.stats}>
+            <View style={styles.statText}>
+              <Text style={styles.statName}>Star</Text>
+              <Text style={styles.statValue}>1.2w</Text>
+            </View>
+            <View style={styles.statText}>
+              <Text style={styles.statName}>下载</Text>
+              <Text style={styles.statValue}>2056</Text>
+            </View>
           </View>
         </View>
       </View>
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     borderRadius: 20,
     padding: 15,
-    height: 150,
+    paddingBottom: 20,
   },
   profileHeader: {
     flexDirection: 'row',
@@ -114,6 +114,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
+    paddingLeft: 20,
   },
   statText: {
     flexDirection: 'column',

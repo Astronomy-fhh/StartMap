@@ -11,8 +11,11 @@ import {
 import {connect} from 'react-redux';
 import moment from 'moment';
 import {formatMinutesToTime} from '../../../utils/format';
+import { useNavigation } from "@react-navigation/native";
 
 const RecordList = props => {
+  const navigation = useNavigation();
+
   const [data, setData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -38,15 +41,22 @@ const RecordList = props => {
       });
   }, []);
 
+  const toRecordDetail = (item) => {
+    navigation.navigate('RecordDetail', {record: item});
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
         style={{width: '100%'}}
         data={data}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item, index) => item.id.toString()}
         renderItem={({item}) => (
           <View>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                toRecordDetail(item);
+              }}>
               <View style={styles.item}>
                 <View
                   style={{
@@ -72,8 +82,8 @@ const RecordList = props => {
                     paddingLeft: 10,
                     paddingRight: 10,
                   }}>
-                  <Text style={{fontSize: 12, color: '#000'}}>
-                    {item.title}
+                  <Text style={{fontSize: 14, color: '#000'}}>
+                    {item.country + ' ' + item.city}
                   </Text>
                 </View>
                 <View
@@ -124,7 +134,7 @@ const RecordList = props => {
                           color: '#000',
                           fontWeight: '700',
                         }}>
-                        {item.distance.toFixed(2)}
+                        {formatMinutesToTime(item.useTime.toFixed(0))}
                       </Text>
                       <Text
                         style={{

@@ -1,78 +1,47 @@
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { View, Text, Image, StyleSheet } from 'react-native';
+import StickyParallaxHeader from 'react-native-sticky-parallax-header';
 
-const MyComponent = () => {
-  const scrollY = useSharedValue(0);
-
-  const onScroll = Animated.event(
-    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-    { useNativeDriver: false }
-  );
-
-  const headerStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: withSpring(scrollY.value > 50 ? -50 : 0) }],
-    };
-  });
-
+const App = () => {
   return (
-    <View style={styles.container}>
-      {/* 不固定部分 */}
-      <Animated.View style={[styles.nonFixedPart, headerStyle]}>
-        <Text>Non-Fixed Part</Text>
-      </Animated.View>
-
-      {/* 固定部分 */}
-      <Animated.View style={[styles.fixedHeader, headerStyle]}>
-        <Text>Fixed Header</Text>
-      </Animated.View>
-
-      {/* 可滚动内容部分 */}
-      <ScrollView
-        contentContainerStyle={styles.scrollViewContent}
-        onScroll={onScroll}
-        scrollEventThrottle={16}
-      >
-        <Text>Scrollable Content</Text>
-        {/* 添加更多内容以示例滚动 */}
-        <Text>More content...</Text>
-        <Text>Even more content...</Text>
-      </ScrollView>
-    </View>
+    <StickyParallaxHeader
+    />
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  nonFixedPart: {
-    backgroundColor: '#f0f0f0',
-    padding: 16,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1,
-  },
-  fixedHeader: {
-    height: 60,
-    backgroundColor: '#f8f8f8',
-    justifyContent: 'center',
+  header: {
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 2,
+    justifyContent: 'center',
+    padding: 20,
   },
-  scrollViewContent: {
-    paddingTop: 60, // 留出固定头部的空间
-    paddingHorizontal: 16,
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 10,
+  },
+  name: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  foreground: {
+    height: 250,
+    justifyContent: 'flex-end',
+  },
+  backgroundImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  body: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  bodyText: {
+    fontSize: 16,
+    color: '#333',
   },
 });
 
-export default MyComponent;
+export default App;
