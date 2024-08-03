@@ -81,7 +81,8 @@ const TrkList = props => {
                     justifyContent: 'flex-start',
                   }}>
                   <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
-                    <Text style={{fontSize: 22, color: '#000', fontWeight: '700'}}>
+                    <Text
+                      style={{fontSize: 22, color: '#000', fontWeight: '700'}}>
                       {item.distance.toFixed(2)}
                     </Text>
                     <Text style={{fontSize: 18, color: '#000', paddingLeft: 5}}>

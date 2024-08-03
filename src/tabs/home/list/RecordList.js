@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
   separator: {
     width: 1,
     backgroundColor: '#cdcdcd',
-    marginHorizontal: 20,
+    marginHorizontal: 25,
     marginVertical: 3,
   },
   separator2: {

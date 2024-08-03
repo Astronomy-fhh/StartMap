@@ -1,16 +1,14 @@
 import 'react-native-gesture-handler';
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import { View, Text, StyleSheet, Settings } from "react-native";
+import {View, Text, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import HomeScreen from '../tabs/home';
 import TrkScreen from '../tabs/trk';
-
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SearchScreen from '../tabs/search';
 import RecordDetail from '../tabs/home/list/RecordDetail';
-import Debug from "../debug/debug";
+import {NavigationContainer} from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
@@ -27,14 +25,9 @@ function MainTab() {
         },
       })}>
       <Tab.Screen
-        name="recordDetail"
-        component={RecordDetail}
+        name="Rec"
+        component={SearchScreen}
         options={{
-          tabBarStyle: {
-            display: 'none',
-          },
-          headerTitle: 'recordDetail',
-          title: 'recordDetail',
           tabBarLabel: ({focused, color}) => (
             <Text style={[styles.tabLabel, {color}]}>
               {focused ? '探索' : '探索'}
@@ -50,7 +43,7 @@ function MainTab() {
         }}
       />
       <Tab.Screen
-        name="star"
+        name="Star"
         component={SearchScreen}
         options={{
           title: '探索',
@@ -69,7 +62,7 @@ function MainTab() {
         }}
       />
       <Tab.Screen
-        name="trk"
+        name="Trk"
         component={TrkScreen}
         options={{
           tabBarStyle: {
@@ -89,7 +82,7 @@ function MainTab() {
         }}
       />
       <Tab.Screen
-        name="home"
+        name="Home"
         component={HomeScreen}
         options={{
           title: '我的',
@@ -114,27 +107,31 @@ function MainTab() {
 
 const Stack = createNativeStackNavigator();
 
-const Index = (
-  <Stack.Navigator>
-    <Stack.Screen
-      name="Home"
-      component={MainTab}
-      options={{headerShown: false}}
-    />
-    <Stack.Screen
-      name="RecordDetail"
-      component={RecordDetail}
-      options={{
-        headerTitle: '记录详情',
-        headerTitleStyle: {
-          color: '#000',
-          fontWeight: 'normal',
-          fontSize: 18,
-        },
-      }}
-    />
-  </Stack.Navigator>
-);
+function Route() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="MainTab"
+          component={MainTab}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="RecordDetail"
+          component={RecordDetail}
+          options={{
+            headerTitle: '记录详情',
+            headerTitleStyle: {
+              color: '#000',
+              fontWeight: 'normal',
+              fontSize: 18,
+            },
+          }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -155,4 +152,4 @@ const styles = StyleSheet.create({
   tabIcon: {},
 });
 
-export default Index;
+export default Route;

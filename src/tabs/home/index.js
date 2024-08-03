@@ -1,17 +1,24 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Person from './head/Person';
-import PersonScroll from "./head/PersonScroll";
+import PersonScroll from './head/PersonScroll';
+import {useNavigation} from '@react-navigation/native';
 
-class HomeScreen extends React.Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Person />
-      </View>
-    );
-  }
-}
+const HomeScreen = ({navigation}) => {
+  const toRecordDetail = item => {
+    console.log(navigation.getState());
+    navigation.navigate('RecordDetail');
+  };
+
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity onPress={toRecordDetail}>
+        <Text>Go to Details</Text>
+      </TouchableOpacity>
+      <Person />
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
