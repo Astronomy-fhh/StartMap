@@ -43,25 +43,6 @@ function MainTab() {
         }}
       />
       <Tab.Screen
-        name="Star"
-        component={SearchScreen}
-        options={{
-          title: '探索',
-          tabBarLabel: ({focused, color}) => (
-            <Text style={[styles.tabLabel, {color}]}>
-              {focused ? '探索' : '探索'}
-            </Text>
-          ),
-          tabBarIcon: ({focused, color, size}) => (
-            <Icon
-              name={focused ? 'star' : 'star-outline'}
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
         name="Trk"
         component={TrkScreen}
         options={{
