@@ -11,9 +11,10 @@ import {
 import {connect} from 'react-redux';
 import moment from 'moment';
 import {formatMinutesToTime} from '../../../utils/format';
-import { useNavigation } from "@react-navigation/native";
+import {useNavigation} from "@react-navigation/native";
+import { TrkFromNames } from "../../../models/trkList/trkList";
 
-const RecordList = props => {
+const TrkList = props => {
   const navigation = useNavigation();
 
   const [data, setData] = useState([]);
@@ -31,7 +32,6 @@ const RecordList = props => {
     props
       .getTrkList()
       .then(newData => {
-        console.log('newData:', newData);
         setData(newData);
         setRefreshing(false);
       })
@@ -41,8 +41,8 @@ const RecordList = props => {
       });
   }, []);
 
-  const toRecordDetail = (item) => {
-    navigation.navigate('RecordDetail', {record: item});
+  const toRecordDetail = item => {
+    navigation.navigate('TrkDetail', {trk: item});
   };
 
   return (
@@ -61,18 +61,20 @@ const RecordList = props => {
                 <View
                   style={{
                     flexDirection: 'row',
-                    justifyContent: 'flex-start',
+                    justifyContent: 'space-between',
                     width: '100%',
                     paddingLeft: 10,
                     paddingRight: 10,
                     paddingTop: 5,
                   }}>
                   <Text style={{fontSize: 14, color: '#000'}}>
-                    {moment(item.endTime).format('YYYY年MM月DD日 HH:mm  ')}
+                    {moment(item.startTime).format('YYYY年MM月DD日 HH:mm') +
+                      '-' +
+                      moment(item.endTime).format('HH:mm')}
                   </Text>
-                  {/*<Text style={{fontSize: 14, color: '#000'}}>*/}
-                  {/*  {item.country} {item.city}*/}
-                  {/*</Text>*/}
+                  <Text style={{fontSize: 12, color: '#000', paddingLeft: 30}}>
+                    {TrkFromNames[item.from] || ''}
+                  </Text>
                 </View>
                 <View
                   style={{
@@ -82,8 +84,8 @@ const RecordList = props => {
                     paddingLeft: 10,
                     paddingRight: 10,
                   }}>
-                  <Text style={{fontSize: 14, color: '#000'}}>
-                    {item.country + ' ' + item.city}
+                  <Text style={{fontSize: 12, color: '#575757'}}>
+                    {item.title || ''}
                   </Text>
                 </View>
                 <View
@@ -109,7 +111,7 @@ const RecordList = props => {
                           color: '#000',
                           fontWeight: '700',
                         }}>
-                        {item.distance.toFixed(2)}
+                        {(item.distance / 1000).toFixed(2)}
                       </Text>
                       <Text
                         style={{fontSize: 15, color: '#000', paddingLeft: 5}}>
@@ -125,7 +127,7 @@ const RecordList = props => {
                       flexDirection: 'column',
                       justifyContent: 'flex-start',
                     }}>
-                    <Text style={{fontSize: 14, color: '#575757'}}>时间</Text>
+                    <Text style={{fontSize: 14, color: '#575757'}}>用时</Text>
                     <View
                       style={{flexDirection: 'row', alignItems: 'flex-end'}}>
                       <Text
@@ -240,7 +242,7 @@ const styles = StyleSheet.create({
   separator: {
     width: 1,
     backgroundColor: '#cdcdcd',
-    marginHorizontal: 25,
+    marginHorizontal: 18,
     marginVertical: 3,
   },
   separator2: {
@@ -253,12 +255,12 @@ const styles = StyleSheet.create({
 
 const stateToProps = state => {
   return {
-    recordList: state.recordList,
+    trkList: state.trkList,
   };
 };
 
 const dispatchToProps = dispatch => ({
-  getTrkList: payload => dispatch.recordList.getList(payload),
+  getTrkList: payload => dispatch.trkList.getList(payload),
 });
 
-export default connect(stateToProps, dispatchToProps)(RecordList);
+export default connect(stateToProps, dispatchToProps)(TrkList);

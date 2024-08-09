@@ -7,8 +7,10 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import HomeScreen from '../tabs/home';
 import TrkScreen from '../tabs/trk';
 import SearchScreen from '../tabs/search';
-import RecordDetail from '../tabs/home/list/RecordDetail';
+import RecordDetail from '../tabs/home/record/RecordDetail';
 import {NavigationContainer} from '@react-navigation/native';
+import TrkDetail from '../tabs/home/trk/TrkDetail';
+import TrkList from "../tabs/home/trk/TrkList";
 
 const Tab = createBottomTabNavigator();
 
@@ -26,7 +28,7 @@ function MainTab() {
       })}>
       <Tab.Screen
         name="Rec"
-        component={SearchScreen}
+        component={TrkList}
         options={{
           tabBarLabel: ({focused, color}) => (
             <Text style={[styles.tabLabel, {color}]}>
@@ -102,6 +104,18 @@ function Route() {
           component={RecordDetail}
           options={{
             headerTitle: '记录详情',
+            headerTitleStyle: {
+              color: '#000',
+              fontWeight: 'normal',
+              fontSize: 18,
+            },
+          }}
+        />
+        <Stack.Screen
+          name="TrkDetail"
+          component={TrkDetail}
+          options={{
+            headerTitle: '路线详情',
             headerTitleStyle: {
               color: '#000',
               fontWeight: 'normal',

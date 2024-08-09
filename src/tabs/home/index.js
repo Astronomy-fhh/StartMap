@@ -12,9 +12,6 @@ const HomeScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={toRecordDetail}>
-        <Text>Go to Details</Text>
-      </TouchableOpacity>
       <Person />
     </View>
   );

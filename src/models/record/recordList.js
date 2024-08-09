@@ -1,17 +1,25 @@
-// eslint-disable-next-line no-unused-vars
-import {TrkPointST} from '../trk/trkStart.tsx';
-import { calculateTrkStats } from "../../utils/trkCalculate";
+import {calculateTrkStats } from '../../utils/trkCalculate';
+import { TrkFromRecord } from "../trkList/trkList";
+/**
+ * @typedef {Object} RecordPoint
+ * @property {number} lat - The latitude
+ * @property {number} lon - The latitude
+ * @property {number} ele - The elevation
+ * @property {string} time - The time string
+ * @property {boolean} pause - The pause status
+ */
 
 /**
  * @typedef {Object} Record
  * @property {number} id - The unique identifier
  * @property {string} startTime - The start time of the record
  * @property {string} endTime - The end time of the record
- * @property {TrkPointST[]} points - Array of tracking points
+ * @property {RecordPoint[]} points - Array of tracking points
  * @property {number} useTime - The time used in seconds
  * @property {number} distance - The distance in meters
  * @property {number} ascent - The ascent in meters
  * @property {number} descent - The descent in meters
+ * @property {number} stepSpeed - The speed in meters per second
  * @property {string} desc - Description of the record
  * @property {string} title - Name of the record
  * @property {string} address - Address of the record
@@ -26,13 +34,42 @@ export const RecordListModel = {
   },
   reducers: {
     add(state, payload) {
+      return {
+        ...state,
+        list: [...state.list, payload],
+      };
+    },
+  },
+  effects: dispatch => ({
+    async getList(payload, rootState) {
+      try {
+        // 例如：const data = await fetchDataFromAPI();
+        return new Promise(resolve => {
+          setTimeout(() => {
+            const list = rootState.recordList.list.sort((a, b) => {
+              return Math.abs(b.id) - Math.abs(a.id);
+            });
+            resolve(list);
+          }, 200);
+        });
+      } catch (error) {
+        throw error;
+      }
+    },
+    async asyncAddFromRecord(payload, rootState) {
+      console.log('asyncAddFromRecord:', payload);
       if (payload.points.length === 0) {
-        return state;
+        return;
       }
 
-      // 计算统计值
-      const {totalDistance, totalTime, totalAscent, totalDescent} =
-        calculateTrkStats(payload.points);
+      // 添加记录
+      const {
+        totalDistance,
+        totalTime,
+        totalAscent,
+        totalDescent,
+        kilometerSpeeds,
+      } = calculateTrkStats(payload.points);
 
       const newRecord = {
         id: new Date().getTime() * -1,
@@ -43,37 +80,49 @@ export const RecordListModel = {
         useTime: totalTime,
         ascent: totalAscent,
         descent: totalDescent,
-        title: (payload.locationInfo?.address || '未知位置') + '附近的活动',
+        title: (payload.locationInfo?.address || '未知位置') + '附近的记录',
         desc: '',
-        from: '',
         address: payload.locationInfo?.address || '',
         country: payload.locationInfo?.country || '',
         city: payload.locationInfo?.city || '',
         adCode: payload.locationInfo?.adCode || 0,
+        stepSpeed: kilometerSpeeds,
       };
-      console.log('add newRecord', newRecord);
-      return {
-        ...state,
-        list: [...state.list, newRecord],
-      };
-    },
-  },
-  effects: dispatch => ({
-    async getList(payload, rootState) {
-      try {
-        // 例如：const data = await fetchDataFromAPI();
-        return new Promise(resolve => {
-          setTimeout(() => {
-            // 通过 state 而不是 rootState 获取最新的数据
-            const list = rootState.recordList.list.sort((a, b) => {
-              return new Date(b.endTime) - new Date(a.endTime);
-            });
-            resolve(list);
-          }, 1000);
+      dispatch.recordList.add(newRecord);
+
+      // 添加轨迹
+      const trkPoints = [];
+      for (const point of payload.points) {
+        if (point.pause) {
+          continue;
+        }
+        trkPoints.push({
+          latitude: point.latitude,
+          longitude: point.longitude,
+          altitude: point.altitude,
+          time: new Date(point.time).toISOString(),
         });
-      } catch (error) {
-        throw error;
       }
+
+      const trk = {
+        id: new Date().getTime() * -1,
+        startTime: trkPoints[0].time,
+        endTime: trkPoints[trkPoints.length - 1].time,
+        points: trkPoints,
+        useTime: totalTime,
+        distance: totalDistance,
+        ascent: totalAscent,
+        descent: totalDescent,
+        title: (payload.locationInfo?.address || '未知位置') + '附近的路线',
+        desc: '',
+        address: payload.locationInfo?.address || '',
+        country: payload.locationInfo?.country || '',
+        city: payload.locationInfo?.city || '',
+        adCode: payload.locationInfo?.adCode || 0,
+        from: TrkFromRecord,
+      };
+
+      dispatch.trkList.add(trk);
     },
   }),
 };

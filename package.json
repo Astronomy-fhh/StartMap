@@ -30,6 +30,7 @@
     "react-native": "0.74.3",
     "react-native-amap-geolocation": "^1.2.3",
     "react-native-amap3d": "^3.2.4",
+    "react-native-document-picker": "^9.3.0",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "2.16.1",
     "react-native-pager-view": "^6.3.3",
@@ -46,7 +47,9 @@
     "react-navigation": "^5.0.0",
     "react-redux": "^9.1.2",
     "redux": "^5.0.1",
-    "redux-persist": "^6.0.0"
+    "redux-persist": "^6.0.0",
+    "xmldom": "^0.6.0",
+    "xpath": "^0.0.34"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

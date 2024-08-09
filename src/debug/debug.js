@@ -7,6 +7,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ImportGpx from "./importGpx";
 
 const FloatingDebugButton = () => {
   const [position, setPosition] = useState({x: 200, y: 50});
@@ -72,6 +73,7 @@ const FloatingDebugButton = () => {
       </TouchableOpacity>
       {isDropdownVisible ? (
         <View style={styles.dropdown}>
+          <ImportGpx />
           <TouchableOpacity onPress={logClean} style={styles.dropdownButton}>
             <Text style={styles.buttonText}>清理storage</Text>
           </TouchableOpacity>

@@ -40,7 +40,11 @@ const TrkStartingScreen = (props: any) => {
       if (props.trkStart.trkTimerBaseTime === 0) {
         setTotalTimeShowVal('00:00');
       } else if (props.trkStart.trkTimerBaseTime < 0) {
-        setTotalTimeShowVal(formatMinutesToTime(Math.floor(props.trkStart.trkTimerBaseTime / 1000) * -1));
+        setTotalTimeShowVal(
+          formatMinutesToTime(
+            Math.floor(props.trkStart.trkTimerBaseTime / 1000) * -1,
+          ),
+        );
       } else {
         interval = setInterval(() => {
           const minuteDiff = Math.ceil(
@@ -67,9 +71,9 @@ const TrkStartingScreen = (props: any) => {
         currentKilometerSpeed,
         currentAltitude,
         finalPointIsPaused,
-      } = calculateTrkStats(props.trkStart.trkPoints);
+      } = calculateTrkStats(props.trkStart.points);
 
-      setTotalDistanceVal(totalDistance.toFixed(2));
+      setTotalDistanceVal((totalDistance / 1000).toFixed(2));
       setTotalAscentVal(totalAscent.toFixed(0));
       setTotalDescentVal(totalDescent.toFixed(0));
       setKilometerSpeedsVal(kilometerSpeeds);
@@ -79,7 +83,7 @@ const TrkStartingScreen = (props: any) => {
       totalTimeVal.current = totalTime;
       timerBaseTime.current = new Date().getTime() - totalTime;
       console.log('ret', finalPointIsPaused, totalTimeEndTime, totalTime);
-    }, [props.trkStart.trkPoints]),
+    }, [props.trkStart.points]),
   );
 
   const handleSheetChanges = (index: number) => {
@@ -101,7 +105,7 @@ const TrkStartingScreen = (props: any) => {
         longitude: props.trkStart.currentPoint.longitude || 0,
         altitude: props.trkStart.currentPoint.altitude || 0,
         speed: 0,
-        timestamp: new Date().getTime(),
+        time: new Date().getTime(),
         pause: true,
       };
       props.addTrkPoint(currentTrkPoint);
@@ -110,13 +114,10 @@ const TrkStartingScreen = (props: any) => {
   };
   const stopHandle = () => {
     stopLocation();
-    const startTime = props.trkStart.startTime;
     props.setStart(false);
-    props.addRecord({
-      startTime: startTime,
-      endTime: new Date().toISOString(),
-      points: props.trkStart.trkPoints,
-      locationInfo: props.trkStart.locationInfo,
+    props.asyncAddFromRecord({
+      ...props.trkStart,
+      ...{endTime: new Date().toISOString()},
     });
     props.setTrkPoints([]);
   };
@@ -321,7 +322,7 @@ const styles = StyleSheet.create({
   },
 
   startButtonTextColor: {
-    color: '#b3c63f',
+    color: '#626c2c',
     fontSize: 20,
   },
 });
@@ -338,7 +339,7 @@ const dispatchToProps = dispatch => ({
   setTrkPoints: (payload: any) => dispatch.trkStart.setTrkPoints(payload),
   addTrkPoint: (payload: any) => dispatch.trkStart.addTrkPoint(payload),
   setCurrentPoint: (payload: any) => dispatch.trkStart.setCurrentPoint(payload),
-  addRecord: (payload: any) => dispatch.recordList.add(payload),
+  asyncAddFromRecord: (payload: any) => dispatch.recordList.asyncAddFromRecord(payload),
 });
 
 export default connect(stateToProps, dispatchToProps)(TrkStartingScreen);

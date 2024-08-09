@@ -63,8 +63,8 @@ const TrkMapScreen = (props: any) => {
   }, []);
 
   useEffect(() => {
-    setPolylinePoints(props.trkStart.trkPoints);
-  }, [props.trkStart.trkPoints]);
+    setPolylinePoints(props.trkStart.points || []);
+  }, [props.trkStart.points]);
 
   const changeMapType = () => {
     const index = mapTypeList.indexOf(mapType);
@@ -85,7 +85,9 @@ const TrkMapScreen = (props: any) => {
           },
         };
         console.log('useFocusEffect', moveCameraPosition);
-        mapViewRef.current.moveCamera(currentCameraPosition, 1000);
+        if (mapViewRef.current) {
+          mapViewRef.current.moveCamera(moveCameraPosition, 1000);
+        }
       }
       return () => {};
     }, []),

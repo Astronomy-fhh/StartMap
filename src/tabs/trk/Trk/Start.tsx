@@ -1,8 +1,5 @@
-import {AMapSdk, MapType, MapView, Polyline} from 'react-native-amap3d';
 import React, {useEffect, useRef, useState} from 'react';
 import {
-  PermissionsAndroid,
-  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -47,7 +44,7 @@ const TrkStartScreen = (props: any) => {
         longitude: location.longitude,
         altitude: location.altitude,
         speed: location.speed,
-        timestamp: location.timestamp,
+        time: new Date(location.timestamp || 0).toISOString(),
         pause: false,
       };
       // 记录第一个点的位置详情

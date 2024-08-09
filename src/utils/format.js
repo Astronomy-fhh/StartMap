@@ -21,3 +21,11 @@ export function formatMinutesToSeconds(minutes) {
   // console.log('formatMinutesToSeconds', minutes, timeStr);
   return timeStr;
 }
+
+export function formatTimeToHHMM(time) {
+  if (!time) {
+    return '00:00';
+  }
+  const date = new Date(time);
+  return `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+}

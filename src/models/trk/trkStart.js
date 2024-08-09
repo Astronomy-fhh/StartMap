@@ -1,40 +1,33 @@
 import {MapType} from 'react-native-amap3d';
 
-export interface TrkPointST {
-  latitude: number;
-  longitude: number;
-  altitude?: number; // Optional
-  timestamp: number;
-  pause?: boolean;
-}
-
 export const trkStartModel = {
   state: {
     start: false,
     startTime: '',
+    endTime: '',
     pause: false,
     pauseTime: 0,
     duration: 0,
     trkTimerBaseTime: 0,
     mapType: MapType.Night,
-    currentPoint: {} as TrkPointST,
-    trkPoints: [] as TrkPointST[],
+    currentPoint: {},
+    points: [],
     locationInfo: {},
   },
   reducers: {
-    setLocationInfo(state: any, payload: any) {
+    setLocationInfo(state, payload) {
       return {
         ...state,
         locationInfo: payload,
       };
     },
-    setTrkPoints(state: any, payload: TrkPointST[]) {
+    setTrkPoints(state, payload) {
       return {
         ...state,
-        trkPoints: payload,
+        points: payload,
       };
     },
-    setCurrentPoint(state: any, payload: TrkPointST) {
+    setCurrentPoint(state, payload) {
       if (!state.start || state.pause) {
         return state;
       }
@@ -43,29 +36,28 @@ export const trkStartModel = {
         currentPoint: payload,
       };
     },
-    setMapType(state: any, payload: MapType) {
+    setMapType(state, payload) {
       return {
         ...state,
         mapType: payload,
       };
     },
-    checkAddTrkPoint(state: any, payload: TrkPointST) {
+    checkAddTrkPoint(state, payload) {
       if (!state.start || state.pause) {
-        console.log('addTrkPoint not start or pause');
         return state;
       }
       return {
         ...state,
-        trkPoints: [...state.trkPoints, payload],
+        points: [...state.points, payload],
       };
     },
-    addTrkPoint(state: any, payload: TrkPointST) {
+    addTrkPoint(state, payload) {
       return {
         ...state,
-        trkPoints: [...state.trkPoints, payload],
+        points: [...state.points, payload],
       };
     },
-    setStart(state: any, payload: boolean) {
+    setStart(state, payload) {
       if (payload) {
         const date = new Date();
         const now = date.getTime();
@@ -82,8 +74,8 @@ export const trkStartModel = {
       } else {
         return {
           ...state,
-          startTime: '',
           start: false,
+          endTime: new Date().toISOString(),
           pause: false,
           pauseTime: 0,
           duration: 0,
@@ -91,7 +83,7 @@ export const trkStartModel = {
         };
       }
     },
-    setPause(state: any, payload: boolean) {
+    setPause(state, payload) {
       const now = new Date().getTime();
       if (payload) {
         const duration = state.duration + now - state.pauseTime;

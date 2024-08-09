@@ -3,7 +3,7 @@ import { View, Text, Button, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import RecordDetail from "../tabs/home/list/RecordDetail";
+import RecordDetail from "../tabs/home/record/RecordDetail";
 import TrkMapScreen from "../tabs/trk/Map/TrkMap";
 import TrkScreen from "../tabs/trk";
 import { MapType, MapView, Polyline } from "react-native-amap3d";
