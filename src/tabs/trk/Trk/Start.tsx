@@ -1,5 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
+  PermissionsAndroid,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -17,6 +19,68 @@ import {
   ReGeocode,
   LocationType,
 } from 'react-native-amap-geolocation/src/types.ts';
+import {
+  ErrorNotification,
+  SuccessAlert,
+  WarnAlert,
+  WarnNotification,
+} from '../../../utils/notification';
+import {
+  request,
+  PERMISSIONS,
+  RESULTS,
+} from 'react-native-permissions';
+
+export const requestPermissions = async (background = true) => {
+  if (Platform.OS === 'android') {
+    try {
+      let status = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+      if (status !== RESULTS.GRANTED) {
+        WarnNotification(
+          '请授权精确定位权限',
+          '允许应用在记录过程中，访问设备的精确地理位置。使用 GPS、网络、Wi-Fi 和其他位置提供者来获取设备的精确位置',
+          5000,
+        );
+        return false;
+      }
+
+      status = await request(PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION);
+      if (status !== RESULTS.GRANTED) {
+        WarnNotification(
+          '请授权模糊定位权限',
+          '允许应用在记录过程中，访问设备的大致地理位置。使用网络、Wi-Fi 和移动网络基站等提供者来获取设备的位置',
+          5000,
+        );
+        return false;
+      }
+
+      if (background) {
+        status = await request(PERMISSIONS.ANDROID.ACCESS_BACKGROUND_LOCATION);
+        if (status !== RESULTS.GRANTED) {
+          WarnNotification(
+            '请授权后台定位权限',
+            '当应用挂起, 允许应用在记录过程中，持续的运动位置追踪',
+            5000,
+          );
+          return false;
+        }
+      }
+      return true;
+    } catch (err) {
+      WarnNotification('申请相关设备权限失败');
+      return false;
+    }
+  } else if (Platform.OS === 'ios') {
+    const status = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+    if (status === RESULTS.GRANTED) {
+      return true;
+    } else {
+      WarnNotification('申请相关设备权限失败');
+      return false;
+    }
+  }
+};
+
 const TrkStartScreen = (props: any) => {
   console.log('TrkStartScreen', props);
 
@@ -24,21 +88,27 @@ const TrkStartScreen = (props: any) => {
     console.log('handleSheetChanges', index);
   };
   const bottomSheetRef = useRef(null);
-  const {startLocation, stopLocation, addLocationListen} = GeoLocation();
+  const {startLocation, stopLocation, addLocationListen, clearLocationListen} =
+    GeoLocation();
 
-  const startHandle = () => {
+  const startHandle = async () => {
+    const permissionOk = await requestPermissions();
+    if (!permissionOk) {
+      return;
+    }
+    clearLocationListen();
     stopLocation();
-    startLocation();
     addLocationListen((location: Location & ReGeocode) => {
-      console.log('trking location listen', location);
+      console.log('location', location);
       if (location.errorCode) {
-        console.log('trking location listen error', location.errorInfo);
+        ErrorNotification('定位失败', location.errorInfo || '');
         return;
       }
       if (location.locationType !== LocationType.GPS) {
-        console.log('trking location listen warn', 'locationType is not GPS');
-        //return;
+        WarnAlert('GPS定位信号弱，请移动至开阔地带');
+        return;
       }
+      console.log('gpsAccuracy', location.gpsAccuracy);
       const currentTrkPoint = {
         latitude: location.latitude,
         longitude: location.longitude,
@@ -59,7 +129,9 @@ const TrkStartScreen = (props: any) => {
       props.checkAddTrkPoint(currentTrkPoint);
       props.setCurrentPoint(currentTrkPoint);
     });
+    startLocation();
     props.setStart(true);
+    SuccessAlert('记录已开始', '户外活动 注意安全 结伴而行');
   };
 
   const animationConfigs = useBottomSheetTimingConfigs({
@@ -81,7 +153,7 @@ const TrkStartScreen = (props: any) => {
       backgroundStyle={{
         backgroundColor: '#fff',
       }}
-      snapPoints={['4%', '17%']}>
+      snapPoints={['12%', '12%']}>
       <BottomSheetView>
         <View style={styles.bottomBtnLine}>
           <TouchableOpacity
@@ -164,8 +236,8 @@ const styles = StyleSheet.create({
   },
   startItemOpBtn: {
     width: 160,
-    height: 80,
-    borderRadius: 26,
+    height: 60,
+    borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 20,

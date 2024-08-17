@@ -8,6 +8,13 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ImportGpx from "./importGpx";
+import {
+  ErrorAlert,
+  NotificationError,
+  NotificationSuccess,
+  SuccessAlert,
+  SuccessNotification,
+} from "../utils/notification";
 
 const FloatingDebugButton = () => {
   const [position, setPosition] = useState({x: 200, y: 50});
@@ -74,6 +81,13 @@ const FloatingDebugButton = () => {
       {isDropdownVisible ? (
         <View style={styles.dropdown}>
           <ImportGpx />
+          <TouchableOpacity
+            onPress={() => {
+              SuccessAlert('操作成功', '这是一个测试成功的文本');
+            }}
+            style={styles.dropdownButton}>
+            <Text style={styles.buttonText}>成功通知</Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={logClean} style={styles.dropdownButton}>
             <Text style={styles.buttonText}>清理storage</Text>
           </TouchableOpacity>

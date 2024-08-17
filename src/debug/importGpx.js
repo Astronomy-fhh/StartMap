@@ -8,6 +8,7 @@ import {connect} from 'react-redux';
 import {parseGPXFromXML} from '../utils/gpx';
 import moment from 'moment';
 import { TrkFromImport, TrkFromRecord } from "../models/trkList/trkList";
+import { ErrorNotification, Notification, NotificationSuccess, SuccessNotification } from "../utils/notification";
 
 // 定义GPX结构体
 const gpxData = {
@@ -43,21 +44,22 @@ const ImportGpx = props => {
           }, time=${point.time}`,
         );
       });
-      gpxData.title = '外部导入的轨迹' + moment().format('YYYYMMDDHHmm');
+      gpxData.title = '外部导入的路线' + moment().format('YYYYMMDDHHmm');
       gpxData.from = TrkFromImport;
       props
         .asyncAddFromImport(gpxData)
         .then(r => {
-          console.log('add trk success:');
+          SuccessNotification('导入成功', gpxData.title);
         })
         .catch(e => {
-          console.log('add trk failed:', e);
+          ErrorNotification('导入失败', e.message || '位置错误');
         });
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
-        console.log('User cancelled the picker');
+        ErrorNotification('导入失败', '用户取消了文件选择');
       } else {
-        console.log('Unknown error: ', err);
+        console.log(err);
+        ErrorNotification('导入失败', err.message || '位置错误');
       }
     }
   };

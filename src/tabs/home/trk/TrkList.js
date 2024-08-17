@@ -136,7 +136,7 @@ const TrkList = props => {
                           color: '#000',
                           fontWeight: '700',
                         }}>
-                        {formatMinutesToTime(item.useTime.toFixed(0))}
+                        {formatMinutesToTime((item.useTime / 1000).toFixed(0))}
                       </Text>
                       <Text
                         style={{

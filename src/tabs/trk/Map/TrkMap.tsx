@@ -1,11 +1,26 @@
-import {AMapSdk, MapType, MapView, Polyline} from 'react-native-amap3d';
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import {Text, Platform, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {AMapSdk, MapType, MapView, Polyline, Marker} from 'react-native-amap3d';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {
+  Text,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  PermissionsAndroid,
+} from 'react-native';
 import GeoLocation from './GeoLocation.tsx';
 import {connect} from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Location, ReGeocode } from "react-native-amap-geolocation/src/types.ts";
-import { useFocusEffect } from "@react-navigation/native";
+import MIcon from 'react-native-vector-icons/MaterialIcons';
+
+import {Location, ReGeocode} from 'react-native-amap-geolocation/src/types.ts';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {WarnNotification} from '../../../utils/notification';
+import {requestPermissions} from '../Trk/Start.tsx';
+import LocationMarker from './LocationMarker.tsx';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
+import { magnetometer, SensorTypes, setUpdateIntervalForType } from "react-native-sensors";
+import DirectionSign from "./DirectionSign.tsx";
 
 const TestPolylinePoints = [
   {latitude: 40.006901, longitude: 116.097972},
@@ -16,9 +31,10 @@ const TestPolylinePoints = [
 ];
 
 const TrkMapScreen = (props: any) => {
+  const navigation = useNavigation();
   const mapViewRef = useRef(null);
   const [polylinePoints, setPolylinePoints] = useState(TestPolylinePoints);
-  const [polylineColor, setPolylineColor] = useState('#c146ea');
+  const [polylineColor, setPolylineColor] = useState('#b4c55b');
   const {
     getLocation,
     startLocation,
@@ -37,15 +53,19 @@ const TrkMapScreen = (props: any) => {
   const mapTypeList = [MapType.Standard, MapType.Satellite, MapType.Night];
 
   useEffect(() => {
-    console.log('setCurrentCameraPosition');
-
-    setCurrentCameraPosition({
-      zoom: 19,
-      target: {
-        latitude: props.trkStart.currentPoint.latitude,
-        longitude: props.trkStart.currentPoint.longitude,
-      },
-    });
+    console.log('setCurrentCameraPosition', props.trkStart.currentPoint);
+    if (
+      props.trkStart.currentPoint.latitude > 0 &&
+      props.trkStart.currentPoint.longitude > 0
+    ) {
+      setCurrentCameraPosition({
+        zoom: 19,
+        target: {
+          latitude: props.trkStart.currentPoint.latitude,
+          longitude: props.trkStart.currentPoint.longitude,
+        },
+      });
+    }
   }, [props.trkStart.currentPoint]);
 
   useEffect(() => {
@@ -93,7 +113,11 @@ const TrkMapScreen = (props: any) => {
     }, []),
   );
 
-  const refreshLocation = () => {
+  const refreshLocation = async () => {
+    const permissionOk = await requestPermissions(false);
+    if (!permissionOk) {
+      return;
+    }
     // 如果在持续定位中 则移动镜头到当前位置 不重新定位了 否则需要重新开启
     if (props.trkStart.start && !props.trkStart.pause) {
       mapViewRef.current.moveCamera(currentCameraPosition, 1000);
@@ -113,29 +137,87 @@ const TrkMapScreen = (props: any) => {
     }
   };
 
+  const onBack = () => {
+    navigation.goBack();
+  };
+
+
+  const locationMarkerRef = useRef(null);
+  const [directionAngle, setDirectionAngle] = useState(0);
+
+  // useEffect(() => {
+  //   setUpdateIntervalForType(SensorTypes.magnetometer, 1000);
+  //   const subscription = magnetometer.subscribe((data: {x: any; y: any}) => {
+  //     const {x, y} = data;
+  //     const angle = Math.atan2(y, x) * (180 / Math.PI);
+  //     const adjustedAngle = angle >= 0 ? angle : angle + 360;
+  //     setDirectionAngle(adjustedAngle);
+  //   });
+  //
+  //   return () => {
+  //     subscription.unsubscribe();
+  //   };
+  // }, []);
+
+  useEffect(() => {
+    if (locationMarkerRef.current) {
+      locationMarkerRef.current.update();
+      console.log('directionAngle', directionAngle);
+    }
+  }, [directionAngle]);
+
   return (
     <View style={styles.container}>
       <MapView
+        compassEnabled={false}
         ref={mapViewRef}
         style={styles.map}
         mapType={mapType}
         initialCameraPosition={currentCameraPosition}
         zoomControlsEnabled={false}
         scaleControlsEnabled={false}
-        myLocationEnabled={true}>
-        <Polyline width={3} color={polylineColor} points={polylinePoints} />
+        trafficEnabled={false}
+        buildingsEnabled={false}
+        myLocationEnabled={false}>
+        <Polyline width={6} color={polylineColor} points={polylinePoints} />
+        <Marker
+          ref={locationMarkerRef}
+          position={currentCameraPosition.target || {}}>
+          <LocationMarker directionAngle={directionAngle} />
+        </Marker>
       </MapView>
+      <View
+        style={{
+          position: 'absolute',
+          top: 10,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          width: 50,
+          height: 50,
+        }}>
+        {/*<DirectionSign />*/}
+      </View>
+      <TouchableOpacity onPress={onBack} style={styles.backButton}>
+        <Icon
+          // name={props.trkStart.start ? 'chevron-down' : 'close'}
+          name={'chevron-down'}
+          size={20}
+          color="#000"
+        />
+      </TouchableOpacity>
       <View style={styles.mapOpBtnColumn}>
-        <TouchableOpacity style={styles.button}>
-          <Icon name="add" size={24} color="#000" />
+        <TouchableOpacity style={[styles.button, styles.settingButton]}>
+          <Icon name="settings" size={20} color="#000" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={changeMapType}>
-          <Icon name="map" size={24} color="#000" />
+        <TouchableOpacity
+          style={[styles.button, styles.mapTypeButton]}
+          onPress={changeMapType}>
+          <Icon name="map" size={20} color="#000" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
-          <Icon
-            name="locate"
-            size={24}
+        <TouchableOpacity style={[styles.button, styles.locationButton]}>
+          <MIcon
+            name="my-location"
+            size={20}
             color="#000"
             onPress={refreshLocation}
           />
@@ -159,23 +241,65 @@ const styles = StyleSheet.create({
   mapOpBtnColumn: {
     position: 'absolute',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     borderRadius: 10,
-    top: 200,
-    right: 10,
-    width: 50,
+    top: 0,
+    right: 0,
+    width: 38,
+    height: '100%',
   },
   button: {
-    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    padding: 10,
     marginBottom: 20,
     backgroundColor: '#fff',
-    borderRadius: 10,
+    borderRadius: 16,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+    width: 38,
+    height: 38,
+  },
+  settingButton: {
+    position: 'absolute',
+    right: 10,
+    top: 30,
+  },
+  mapTypeButton: {
+    position: 'absolute',
+    right: 10,
+    top: 100,
+  },
+  locationButton: {
+    position: 'absolute',
+    right: 10,
+    bottom: '30%',
+  },
+  backButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontWeight: 100,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    position: 'absolute',
+    left: 10,
+    top: 30,
+  },
+  cone: {
+    width: 10,
+    height: 100,
+    backgroundColor: 'yellow',
+    // borderLeftWidth: 0,
+    // borderLeftColor: 'transparent',
+    // borderRightWidth: 0,
+    // borderRightColor: 'transparent',
+    // borderBottomWidth: 100,
+    // borderBottomColor: 'yellow',
   },
 });
 

@@ -9,7 +9,9 @@ import Loading from './components/UI/Loading';
 import {PersistGate} from 'redux-persist/es/integration/react';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import FloatingDebugButton from './debug/debug';
-import {StatusBar } from "react-native";
+import {StatusBar} from 'react-native';
+import {NotifierWrapper} from 'react-native-notifier';
+import {PaperProvider} from 'react-native-paper';
 
 class StartMap extends React.Component {
   constructor() {
@@ -32,10 +34,14 @@ class StartMap extends React.Component {
       <SafeAreaProvider>
         <Provider store={store}>
           <PersistGate loading={<Loading />} persistor={local}>
-            <StatusBar barStyle="light-content" backgroundColor="#fff" />
             <GestureHandlerRootView>
-              <FloatingDebugButton />
-              {Route()}
+              <NotifierWrapper>
+                <PaperProvider>
+                  {/*<StatusBar barStyle="light-content" backgroundColor="#fff" />*/}
+                  <FloatingDebugButton />
+                  <Route />
+                </PaperProvider>
+              </NotifierWrapper>
             </GestureHandlerRootView>
           </PersistGate>
         </Provider>

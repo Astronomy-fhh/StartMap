@@ -57,9 +57,8 @@ export const RecordListModel = {
       }
     },
     async asyncAddFromRecord(payload, rootState) {
-      console.log('asyncAddFromRecord:', payload);
-      if (payload.points.length === 0) {
-        return;
+      if (payload.points.length < 2) {
+        throw new Error('没有足够的轨迹点');
       }
 
       // 添加记录
@@ -120,6 +119,7 @@ export const RecordListModel = {
         city: payload.locationInfo?.city || '',
         adCode: payload.locationInfo?.adCode || 0,
         from: TrkFromRecord,
+        createTime: new Date().toISOString(),
       };
 
       dispatch.trkList.add(trk);

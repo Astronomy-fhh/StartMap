@@ -33,6 +33,9 @@ const RecordList = props => {
       .getRecordList()
       .then(newData => {
         setData(newData);
+        for (const newDatum of newData) {
+          console.log(newDatum.startTime, newDatum.endTime, newDatum.useTime);
+        }
         setRefreshing(false);
       })
       .catch(error => {
@@ -136,7 +139,7 @@ const RecordList = props => {
                           color: '#000',
                           fontWeight: '700',
                         }}>
-                        {formatMinutesToTime(item.useTime.toFixed(0))}
+                        {formatMinutesToTime((item.useTime / 1000).toFixed(0))}
                       </Text>
                       <Text
                         style={{

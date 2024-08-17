@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, { useEffect, useState } from "react";
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {View, Text, StyleSheet} from 'react-native';
+import { View, Text, StyleSheet, StatusBar, Button } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import HomeScreen from '../tabs/home';
@@ -11,6 +11,9 @@ import RecordDetail from '../tabs/home/record/RecordDetail';
 import {NavigationContainer} from '@react-navigation/native';
 import TrkDetail from '../tabs/home/trk/TrkDetail';
 import TrkList from "../tabs/home/trk/TrkList";
+import { connect } from "react-redux";
+import { StatusBarAnimation } from "react-native/Libraries/Components/StatusBar/StatusBar";
+import { IconButton, Menu } from "react-native-paper";
 
 const Tab = createBottomTabNavigator();
 
@@ -90,7 +93,24 @@ function MainTab() {
 
 const Stack = createNativeStackNavigator();
 
-function Route() {
+const Route = props => {
+
+  useEffect(() => {
+    if (props.trkStart.start) {
+      if (props.trkStart.pause) {
+        StatusBar.setHidden(false, 'slide');
+        StatusBar.setBackgroundColor('rgba(171,177,132,0.82)');
+        StatusBar.setBarStyle('light-content', true);
+      } else {
+        StatusBar.setHidden(false, 'slide');
+        StatusBar.setBackgroundColor('rgba(147,168,32,0.79)');
+        StatusBar.setBarStyle('light-content');
+      }
+    } else {
+      StatusBar.setBackgroundColor('#fff');
+      StatusBar.setBarStyle('dark-content');
+    }
+  }, [props.trkStart]);
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -117,7 +137,6 @@ function Route() {
           options={{
             headerTitle: '路线详情',
             headerTitleStyle: {
-              color: '#000',
               fontWeight: 'normal',
               fontSize: 18,
             },
@@ -147,4 +166,12 @@ const styles = StyleSheet.create({
   tabIcon: {},
 });
 
-export default Route;
+const stateToProps = state => {
+  return {
+    trkStart: state.trkStart,
+  };
+};
+
+const dispatchToProps = dispatch => ({});
+
+export default connect(stateToProps, dispatchToProps)(Route);

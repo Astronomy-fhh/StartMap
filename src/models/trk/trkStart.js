@@ -70,6 +70,8 @@ export const trkStartModel = {
           pauseTime: now,
           duration: 0,
           locationInfo: {},
+          points: [],
+          currentPoint: {},
         };
       } else {
         return {

@@ -1,4 +1,6 @@
 // 123456 => 00:00:00 或 00:00
+import moment from "moment";
+
 export function formatMinutesToTime(minutes) {
   const hour = Math.floor(minutes / 3600);
   const second = Math.floor((minutes - hour * 3600) / 60);
@@ -28,4 +30,21 @@ export function formatTimeToHHMM(time) {
   }
   const date = new Date(time);
   return `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+}
+
+export function formatTimeRange(startTime, endTime) {
+  const formatStart = 'YYYY年MM月DD日 HH:mm';
+  const startMoment = moment(startTime);
+  const endMoment = moment(endTime);
+
+  let formatEnd = 'HH:mm';
+  if (startMoment.year() !== endMoment.year()) {
+    formatEnd = 'YYYY年MM月DD日 HH:mm';
+  } else if (startMoment.month() !== endMoment.month()) {
+    formatEnd = 'MM月DD日 HH:mm';
+  } else if (startMoment.date() !== endMoment.date()) {
+    formatEnd = 'DD日 HH:mm';
+  }
+
+  return `${startMoment.format(formatStart)} - ${endMoment.format(formatEnd)}`;
 }

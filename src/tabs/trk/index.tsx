@@ -8,7 +8,7 @@ import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const TrkScreen = (props: any) => {
-  const showStart = !props.trkStartStore.start;
+  const showStart = !props.trkStart.start;
   const navigation = useNavigation();
 
   const onBack = () => {
@@ -17,9 +17,6 @@ const TrkScreen = (props: any) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Icon name="close" size={24} color="#000" />
-      </TouchableOpacity>
       <TrkMapScreen />
       {showStart ? <TrkStartScreen /> : <TrkStartingScreen />}
     </View>
@@ -36,8 +33,8 @@ const styles = StyleSheet.create({
     fontSize: 30,
   },
   backButton: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     borderRadius: 25,
     backgroundColor: '#fff',
     justifyContent: 'center',
@@ -54,7 +51,7 @@ const styles = StyleSheet.create({
 
 const stateToProps = (state: any) => {
   return {
-    trkStartStore: state.trkStart,
+    trkStart: state.trkStart,
   };
 };
 

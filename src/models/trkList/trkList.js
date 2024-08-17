@@ -34,6 +34,7 @@ import {calculateTrkStats} from '../../utils/trkCalculate';
  * @property {string} city - City of the record
  * @property {string} adCode - AdCode of the record
  * @property {number} from - From
+ * @property {string} createTime - Create time
  */
 
 export const TrkFromRecord = 1;
@@ -54,6 +55,12 @@ export const TrkListModel = {
         list: [...state.list, payload],
       };
     },
+    delete(state, payload) {
+      return {
+        ...state,
+        list: state.list.filter(item => item.id !== payload),
+      };
+    }
   },
   effects: dispatch => ({
     async getList(payload, rootState) {
@@ -65,7 +72,6 @@ export const TrkListModel = {
             const list = rootState.trkList.list.sort((a, b) => {
               return Math.abs(b.id) - Math.abs(a.id);
             });
-            console.log('list:', list);
             resolve(list);
           }, 100);
         });
@@ -75,7 +81,7 @@ export const TrkListModel = {
     },
     async asyncAddFromImport(payload, rootState) {
       if (payload.points.length === 0) {
-        throw new Error('No points in the GPX file');
+        throw new Error('没有有效的轨迹点');
       }
 
       const trk = {
@@ -94,6 +100,7 @@ export const TrkListModel = {
         city: '',
         adCode: '',
         from: TrkFromImport,
+        createTime: new Date().toISOString(),
       };
       dispatch.trkList.add(trk);
     },

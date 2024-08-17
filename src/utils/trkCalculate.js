@@ -45,7 +45,7 @@ export function calculateTrkStats(data) {
 
     // 计算两个点之间的时间差，单位为秒
     const timeDiff =
-      (new Date(point.time) - new Date(previousPoint.time)) / 1000;
+      new Date(point.time).getTime() - new Date(previousPoint.time).getTime();
     totalTime += timeDiff; // 累积总时间
     currentKilometerDistance += distance; // 累积当前公里距离
     currentKilometerTime += timeDiff; // 累积当前公里时间
@@ -62,7 +62,7 @@ export function calculateTrkStats(data) {
     // 如果当前公里距离超过或等于1000米，计算平均速度
     if (currentKilometerDistance >= 1000) {
       const kmSpeed =
-        currentKilometerDistance / 1000 / (currentKilometerTime / 3600); // 计算公里速度，单位为 km/h
+        currentKilometerDistance / 1000 / (currentKilometerTime / 1000 / 3600); // 计算公里速度，单位为 km/h
       // const speedInSecondsPerKm = 3600 / kmSpeed; // 转换为秒每公里
       kilometerSpeeds.push(kmSpeed); // 保存当前公里速度
       currentKilometerDistance = 0; // 重置当前公里距离
@@ -92,7 +92,7 @@ export function calculateTrkStats(data) {
   // 处理最后一段未满一公里的部分
   if (currentKilometerDistance > 0) {
     const lastKmSpeed =
-      currentKilometerDistance / 1000 / (currentKilometerTime / 3600);
+      currentKilometerDistance / 1000 / (currentKilometerTime / 1000 / 3600);
     // const lastSpeedInSecondsPerKm = 3600 / lastKmSpeed; // 转换为秒每公里
     kilometerSpeeds.push(lastKmSpeed);
   }

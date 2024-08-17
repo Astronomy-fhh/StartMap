@@ -27,7 +27,7 @@ const EleChart = props => {
   const [eleData, setEleData] = useState([]);
 
   const maxEle = useRef(0);
-  const mimEle = useRef(0);
+  const minEle = useRef(0);
 
   useEffect(() => {
     console.log(props.trk.points.length);
@@ -45,16 +45,16 @@ const EleChart = props => {
           continue;
         }
         const point = props.trk.points[pointIndex];
-        tmpEleData.push(point.ele);
+        tmpEleData.push(point.altitude);
         tmpData.push({
           time: point.time,
-          ele: point.ele,
+          ele: point.altitude,
         });
-        if (point.ele > tmpMaxEle) {
-          tmpMaxEle = point.ele;
+        if (point.altitude > tmpMaxEle) {
+          tmpMaxEle = point.altitude;
         }
-        if (point.ele < mimEle.current) {
-          mimEle.current = point.ele;
+        if (point.altitude < minEle.current) {
+          minEle.current = point.altitude;
         }
       }
       setData(tmpData);
@@ -140,6 +140,37 @@ const EleChart = props => {
     />
   );
 
+  const CustomText = ({x, y}) => {
+    return (
+      <G>
+        <SvgText
+          x={x(0)}
+          y={y(maxEle.current) + apx(5)}
+          fontSize={apx(20)}
+          fill="#617485"
+          textAnchor={'start'}>
+          {`海拔变化`}
+        </SvgText>
+        <SvgText
+          x={x(data.length - 1)}
+          y={y(maxEle.current) + apx(0)}
+          fontSize={apx(18)}
+          fill="#617485"
+          textAnchor={'end'}>
+          {`${maxEle.current.toFixed(0)}m`}
+        </SvgText>
+        <SvgText
+          x={x(data.length - 1)}
+          y={y(minEle.current) + apx(0)}
+          fontSize={apx(18)}
+          fill="#617485"
+          textAnchor={'end'}>
+          {`${minEle.current.toFixed(0)}m`}
+        </SvgText>
+      </G>
+    );
+  };
+
   const CustomGradient = () => (
     <Defs key="gradient">
       <LinearGradient id="gradient" x1="0" y="0%" x2="0%" y2="100%">
@@ -171,13 +202,12 @@ const EleChart = props => {
             stroke="rgba(254, 190, 24, 0.27)"
             fill="rgba(255, 255, 255, 0.8)"
           />
-          <SvgText x={apx(20)} fill="#617485" opacity={0.65} fontSize={apx(24)}>
+          <SvgText x={apx(20)} y={apx(18 + 20)} fill="#617485" opacity={0.65} fontSize={apx(18)}>
             {timeString}
           </SvgText>
           <SvgText
             x={apx(20)}
-            y={apx(24 + 20)}
-            fontSize={apx(24)}
+            fontSize={apx(18)}
             fontWeight="bold"
             fill="rgba(224, 188, 136, 1)">
             {ele.toFixed(0)} m
@@ -213,7 +243,7 @@ const EleChart = props => {
           width: apx(750),
           height: apx(280),
           alignSelf: 'stretch',
-          paddingHorizontal: 20,
+          paddingHorizontal: 15,
         }}>
         <View style={{flex: 1}} {...panResponder.current.panHandlers}>
           <AreaChart
@@ -225,19 +255,19 @@ const EleChart = props => {
             <CustomLine />
             <CustomGradient />
             <Tooltip />
-
+            <CustomText />
           </AreaChart>
         </View>
-        <YAxis
-          style={{width: apx(90)}}
-          data={eleData}
-          min={mimEle.current}
-          max={maxEle.current}
-          numberOfTicks={1}
-          formatLabel={value => `${value}m`}
-          contentInset={verticalContentInset}
-          svg={{fontSize: apx(18), fill: '#617485'}}
-        />
+        {/*<YAxis*/}
+        {/*  style={{width: apx(90)}}*/}
+        {/*  data={eleData}*/}
+        {/*  min={mimEle.current}*/}
+        {/*  max={maxEle.current}*/}
+        {/*  numberOfTicks={1}*/}
+        {/*  formatLabel={value => `${value}m`}*/}
+        {/*  contentInset={verticalContentInset}*/}
+        {/*  svg={{fontSize: apx(18), fill: '#617485'}}*/}
+        {/*/>*/}
       </View>
       <XAxis
         style={{alignSelf: 'stretch', width: apx(750), height: apx(60)}}

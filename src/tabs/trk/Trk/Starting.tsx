@@ -1,10 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import BottomSheet, {
   BottomSheetView,
   useBottomSheetTimingConfigs,
@@ -13,8 +8,12 @@ import {connect} from 'react-redux';
 import {Easing} from 'react-native-reanimated';
 import GeoLocation from '../Map/GeoLocation.tsx';
 import {calculateTrkStats} from '../../../utils/trkCalculate';
-import {formatMinutesToSeconds, formatMinutesToTime} from '../../../utils/format';
+import {
+  formatMinutesToSeconds,
+  formatMinutesToTime,
+} from '../../../utils/format';
 import {useFocusEffect} from '@react-navigation/native';
+import { ErrorNotification, SuccessNotification, WarnNotification } from "../../../utils/notification";
 
 const TrkStartingScreen = (props: any) => {
   const [showBtn, setShowBtn] = useState(false);
@@ -115,10 +114,21 @@ const TrkStartingScreen = (props: any) => {
   const stopHandle = () => {
     stopLocation();
     props.setStart(false);
-    props.asyncAddFromRecord({
-      ...props.trkStart,
-      ...{endTime: new Date().toISOString()},
-    });
+    if (props.trkStart.points.length < 5) {
+      WarnNotification('本次记录时间太短，记录无效', '');
+      return;
+    }
+    props
+      .asyncAddFromRecord({
+        ...props.trkStart,
+        ...{endTime: new Date().toISOString()},
+      })
+      .then(() => {
+        SuccessNotification('记录已保存');
+      })
+      .catch((e: {message: any}) => {
+        ErrorNotification('记录保存失败', e.message || '未知错误');
+      });
     props.setTrkPoints([]);
   };
 
@@ -270,14 +280,14 @@ const styles = StyleSheet.create({
   },
 
   startItemValue: {
-    color: '#2f4f4f',
-    fontSize: 26,
-    fontWeight: '700',
+    color: '#000000',
+    fontSize: 32,
+    fontWeight: '500',
   },
   startItemUnit: {
     color: '#696969',
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: '400',
   },
   startItemLabel: {
     color: '#696969',
@@ -296,8 +306,8 @@ const styles = StyleSheet.create({
 
   startItemOpBtn: {
     width: 160,
-    height: 80,
-    borderRadius: 26,
+    height: 60,
+    borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 30,
@@ -315,6 +325,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-end',
     paddingTop: 30,
+    paddingBottom: 10,
   },
   startButtonText: {
     color: 'white',
@@ -322,7 +333,8 @@ const styles = StyleSheet.create({
   },
 
   startButtonTextColor: {
-    color: '#626c2c',
+    // color: '#626c2c',
+    color: '#b5c654',
     fontSize: 20,
   },
 });
@@ -339,7 +351,8 @@ const dispatchToProps = dispatch => ({
   setTrkPoints: (payload: any) => dispatch.trkStart.setTrkPoints(payload),
   addTrkPoint: (payload: any) => dispatch.trkStart.addTrkPoint(payload),
   setCurrentPoint: (payload: any) => dispatch.trkStart.setCurrentPoint(payload),
-  asyncAddFromRecord: (payload: any) => dispatch.recordList.asyncAddFromRecord(payload),
+  asyncAddFromRecord: (payload: any) =>
+    dispatch.recordList.asyncAddFromRecord(payload),
 });
 
 export default connect(stateToProps, dispatchToProps)(TrkStartingScreen);
