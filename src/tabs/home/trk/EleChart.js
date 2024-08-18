@@ -210,7 +210,7 @@ const EleChart = props => {
             fontSize={apx(18)}
             fontWeight="bold"
             fill="rgba(224, 188, 136, 1)">
-            {ele.toFixed(0)} m
+            {ele.toFixed(2)} m
           </SvgText>
         </G>
         <G x={x}>

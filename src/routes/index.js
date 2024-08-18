@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import { View, Text, StyleSheet, StatusBar, Button } from "react-native";
+import {View, Text, StyleSheet, StatusBar, Button} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import HomeScreen from '../tabs/home';
@@ -10,14 +10,21 @@ import SearchScreen from '../tabs/search';
 import RecordDetail from '../tabs/home/record/RecordDetail';
 import {NavigationContainer} from '@react-navigation/native';
 import TrkDetail from '../tabs/home/trk/TrkDetail';
-import TrkList from "../tabs/home/trk/TrkList";
-import { connect } from "react-redux";
-import { StatusBarAnimation } from "react-native/Libraries/Components/StatusBar/StatusBar";
-import { IconButton, Menu } from "react-native-paper";
+import TrkList from '../tabs/home/trk/TrkList';
+import {connect} from 'react-redux';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  interpolateColor,
+} from 'react-native-reanimated';
+import AnimatedTabBarIcon from "./AnimatedTabBarIcon";
 
 const Tab = createBottomTabNavigator();
 
-function MainTab() {
+
+const MainTab = () => {
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
@@ -59,11 +66,7 @@ function MainTab() {
             display: 'none',
           },
           tabBarIcon: ({focused, color, size}) => (
-            <Icon
-              name={focused ? 'navigate' : 'navigate-outline'}
-              size={34}
-              color={color}
-            />
+            <AnimatedTabBarIcon focused={focused} color={color} size={32} />
           ),
         }}
       />
@@ -89,28 +92,31 @@ function MainTab() {
       />
     </Tab.Navigator>
   );
-}
+};
 
 const Stack = createNativeStackNavigator();
 
 const Route = props => {
+  // useEffect(() => {
+  //   if (props.trkStart.start) {
+  //     if (props.trkStart.pause) {
+  //       StatusBar.setHidden(false, 'slide');
+  //       StatusBar.setBackgroundColor('rgba(171,177,132,0.82)');
+  //       StatusBar.setBarStyle('light-content', true);
+  //     } else {
+  //       StatusBar.setHidden(false, 'slide');
+  //       StatusBar.setBackgroundColor('rgba(147,168,32,0.79)');
+  //       StatusBar.setBarStyle('light-content');
+  //     }
+  //   } else {
+  //     StatusBar.setBackgroundColor('#fff');
+  //     StatusBar.setBarStyle('dark-content');
+  //   }
+  // }, [props.trkStart]);
 
-  useEffect(() => {
-    if (props.trkStart.start) {
-      if (props.trkStart.pause) {
-        StatusBar.setHidden(false, 'slide');
-        StatusBar.setBackgroundColor('rgba(171,177,132,0.82)');
-        StatusBar.setBarStyle('light-content', true);
-      } else {
-        StatusBar.setHidden(false, 'slide');
-        StatusBar.setBackgroundColor('rgba(147,168,32,0.79)');
-        StatusBar.setBarStyle('light-content');
-      }
-    } else {
-      StatusBar.setBackgroundColor('#fff');
-      StatusBar.setBarStyle('dark-content');
-    }
-  }, [props.trkStart]);
+  StatusBar.setBarStyle('dark-content', true);
+  StatusBar.setBackgroundColor('#fff');
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -145,7 +151,7 @@ const Route = props => {
       </Stack.Navigator>
     </NavigationContainer>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

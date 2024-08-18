@@ -8,7 +8,7 @@ import {
   LocationMode, setAllowsBackgroundLocationUpdates, setDistanceFilter, setLocationCacheEnable,
   setLocationMode, setMockEnable, setInterval,
   start,
-  stop
+  stop, setSensorEnable
 } from "react-native-amap-geolocation";
 import {Location, ReGeocode} from 'react-native-amap-geolocation/src/types.ts';
 import {Position} from 'react-native-amap-geolocation/src/geolocation.ts';
@@ -60,11 +60,12 @@ const GeoLocation = () => {
   const addLocationListen = (
     handle: (location: Location & ReGeocode) => void,
   ) => {
-    setInterval(5000);
+    setInterval(2000);
     setMockEnable(false);
     setLocationCacheEnable(true);
     setLocationMode(LocationMode.Hight_Accuracy);
     setDistanceFilter(1);
+    setSensorEnable(true);
     setAllowsBackgroundLocationUpdates(true);
     listeners.push(addListener(handle));
   };

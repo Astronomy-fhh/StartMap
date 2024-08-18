@@ -13,6 +13,7 @@ export const trkStartModel = {
     currentPoint: {},
     points: [],
     locationInfo: {},
+    trkStats: {},
   },
   reducers: {
     setLocationInfo(state, payload) {
@@ -49,6 +50,7 @@ export const trkStartModel = {
       return {
         ...state,
         points: [...state.points, payload],
+        currentPoints: payload,
       };
     },
     addTrkPoint(state, payload) {
@@ -72,6 +74,7 @@ export const trkStartModel = {
           locationInfo: {},
           points: [],
           currentPoint: {},
+          trkStats: {},
         };
       } else {
         return {
@@ -104,6 +107,12 @@ export const trkStartModel = {
           trkTimerBaseTime: now - state.duration,
         };
       }
+    },
+    setTrkStats(state, payload) {
+      return {
+        ...state,
+        trkStats: payload,
+      };
     },
   },
 };

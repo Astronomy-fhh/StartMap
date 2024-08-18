@@ -298,7 +298,7 @@ const TrkDetail = props => {
                 <Text style={{fontSize: 16, color: '#575757'}}>用时</Text>
                 <Text
                   style={{fontSize: 20, color: '#454545', fontWeight: '700'}}>
-                  {formatMinutesToTime(trk.useTime.toFixed(0))}
+                  {formatMinutesToTime((trk.useTime / 1000).toFixed(0))}
                 </Text>
                 <View style={{height: 20}} />
                 <Text style={{fontSize: 16, color: '#575757'}}>下降</Text>

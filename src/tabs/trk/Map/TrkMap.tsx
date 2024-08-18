@@ -1,26 +1,21 @@
 import {AMapSdk, MapType, MapView, Polyline, Marker} from 'react-native-amap3d';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
-  Text,
   Platform,
   StyleSheet,
   TouchableOpacity,
   View,
-  PermissionsAndroid,
 } from 'react-native';
 import GeoLocation from './GeoLocation.tsx';
 import {connect} from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
 
-import {Location, ReGeocode} from 'react-native-amap-geolocation/src/types.ts';
+
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {WarnNotification} from '../../../utils/notification';
 import {requestPermissions} from '../Trk/Start.tsx';
 import LocationMarker from './LocationMarker.tsx';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
-import { magnetometer, SensorTypes, setUpdateIntervalForType } from "react-native-sensors";
-import DirectionSign from "./DirectionSign.tsx";
+import sensors, { SensorTypes, setUpdateIntervalForType } from "react-native-sensors";
 
 const TestPolylinePoints = [
   {latitude: 40.006901, longitude: 116.097972},
@@ -51,6 +46,57 @@ const TrkMapScreen = (props: any) => {
     },
   });
   const mapTypeList = [MapType.Standard, MapType.Satellite, MapType.Night];
+
+  const pressureToAltitude = (
+    pressure: number,
+    seaLevelPressure = 101325,
+    temperature = 273.15 - 70,
+  ) => {
+    const R = 287.05; // 气体常数（J/(kg·K)）
+    const g = 9.80665; // 重力加速度（m/s²）
+    const L = 0.0065; // 温度递减率（K/m）
+
+    // 计算海拔高度（米）
+    return (
+      (temperature / L) *
+      (1 - Math.pow(pressure / seaLevelPressure, (R * L) / g))
+    );
+  };
+
+  // Hypsometric 公式
+  function hypsometricFormula(
+    pressure: number,
+    temperature = 288.15,
+    seaLevelPressure = 101325,
+    L = 0.0065,
+  ) {
+    const R = 287.05; // 气体常数（J/(kg·K)）
+    const g = 9.80665; // 重力加速度（m/s²）
+
+    return (
+      ((R * temperature) / g) *
+      (1 - Math.pow(pressure / seaLevelPressure, (R * L) / g))
+    );
+  }
+
+  // const pressureToAltitude = (
+  //   pressure: number, // 当前气压，单位为 hPa
+  //   seaLevelPressure = 1013.25, // 海平面气压，单位为 hPa，默认为 1013.25 hPa
+  // ) => {
+  //   return 44330 * (1 - Math.pow(pressure / seaLevelPressure, 1 / 5.255));
+  // };
+
+  useEffect(() => {
+    setUpdateIntervalForType(SensorTypes.barometer, 1000);
+    const subscription = sensors.barometer.subscribe(data => {
+      // 假设压力值是 hPa，将其转换为 Pa
+      const pressureInHPa = data.pressure;
+      const altitude = hypsometricFormula(pressureInHPa * 100, 283);
+      console.log('Altitude:', pressureInHPa, altitude);
+    });
+
+    return () => subscription.unsubscribe(); // 清理订阅
+  }, []);
 
   useEffect(() => {
     console.log('setCurrentCameraPosition', props.trkStart.currentPoint);
@@ -83,7 +129,14 @@ const TrkMapScreen = (props: any) => {
   }, []);
 
   useEffect(() => {
-    setPolylinePoints(props.trkStart.points || []);
+    if (props.trkStart?.points) {
+      const filteredPoints = props.trkStart.points.filter(
+        (point: {pause: boolean}) => !point.pause,
+      );
+      setPolylinePoints(filteredPoints);
+    } else {
+      setPolylinePoints([]);
+    }
   }, [props.trkStart.points]);
 
   const changeMapType = () => {
@@ -207,12 +260,12 @@ const TrkMapScreen = (props: any) => {
       </TouchableOpacity>
       <View style={styles.mapOpBtnColumn}>
         <TouchableOpacity style={[styles.button, styles.settingButton]}>
-          <Icon name="settings" size={20} color="#000" />
+          <Icon name="settings-outline" size={20} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.button, styles.mapTypeButton]}
           onPress={changeMapType}>
-          <Icon name="map" size={20} color="#000" />
+          <Icon name="layers-outline" size={20} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity style={[styles.button, styles.locationButton]}>
           <MIcon

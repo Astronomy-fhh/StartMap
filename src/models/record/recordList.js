@@ -68,7 +68,8 @@ export const RecordListModel = {
         totalAscent,
         totalDescent,
         kilometerSpeeds,
-      } = calculateTrkStats(payload.points);
+        pauseTime,
+      } = payload.trkStats;
 
       const newRecord = {
         id: new Date().getTime() * -1,
@@ -76,7 +77,11 @@ export const RecordListModel = {
         endTime: payload.endTime,
         points: payload.points,
         distance: totalDistance,
-        useTime: totalTime,
+        useTime:
+          new Date(payload.endTime).getTime() -
+          new Date(payload.startTime).getTime() -
+          pauseTime,
+        trkTotalTime: totalTime,
         ascent: totalAscent,
         descent: totalDescent,
         title: (payload.locationInfo?.address || '未知位置') + '附近的记录',

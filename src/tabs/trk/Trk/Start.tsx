@@ -25,11 +25,8 @@ import {
   WarnAlert,
   WarnNotification,
 } from '../../../utils/notification';
-import {
-  request,
-  PERMISSIONS,
-  RESULTS,
-} from 'react-native-permissions';
+import {request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import { resetTrkStats, TrackStats, trkStats } from "../../../utils/trk/TrackStats";
 
 export const requestPermissions = async (background = true) => {
   if (Platform.OS === 'android') {
@@ -82,7 +79,6 @@ export const requestPermissions = async (background = true) => {
 };
 
 const TrkStartScreen = (props: any) => {
-  console.log('TrkStartScreen', props);
 
   const handleSheetChanges = (index: number) => {
     console.log('handleSheetChanges', index);
@@ -98,6 +94,7 @@ const TrkStartScreen = (props: any) => {
     }
     clearLocationListen();
     stopLocation();
+    resetTrkStats();
     addLocationListen((location: Location & ReGeocode) => {
       console.log('location', location);
       if (location.errorCode) {
@@ -105,18 +102,9 @@ const TrkStartScreen = (props: any) => {
         return;
       }
       if (location.locationType !== LocationType.GPS) {
-        WarnAlert('GPS定位信号弱，请移动至开阔地带');
+        WarnNotification('GPS定位信号弱，请移动至开阔地带');
         return;
       }
-      console.log('gpsAccuracy', location.gpsAccuracy);
-      const currentTrkPoint = {
-        latitude: location.latitude,
-        longitude: location.longitude,
-        altitude: location.altitude,
-        speed: location.speed,
-        time: new Date(location.timestamp || 0).toISOString(),
-        pause: false,
-      };
       // 记录第一个点的位置详情
       if (props.trkStart.locationInfo.address === undefined) {
         props.setLocationInfo({
@@ -126,8 +114,20 @@ const TrkStartScreen = (props: any) => {
           adCode: location.adCode,
         });
       }
-      props.checkAddTrkPoint(currentTrkPoint);
-      props.setCurrentPoint(currentTrkPoint);
+      // 处理后的point
+      const point = trkStats.processPoint({
+        latitude: location.latitude,
+        longitude: location.longitude,
+        altitude: location.altitude,
+        speed: location.speed,
+        time: new Date(location.timestamp || 0).toISOString(),
+        pause: false,
+        gpsAccuracy: location.gpsAccuracy,
+        accuracy: location.accuracy,
+      });
+      const stats = trkStats.getStats();
+      props.checkAddTrkPoint(point);
+      props.setTrkStats(stats);
     });
     startLocation();
     props.setStart(true);
@@ -279,6 +279,7 @@ const dispatchToProps = dispatch => ({
   setStart: (payload: any) => dispatch.trkStart.setStart(payload),
   setPause: (payload: any) => dispatch.trkStart.setPause(payload),
   setLocationInfo: (payload: any) => dispatch.trkStart.setLocationInfo(payload),
+  setTrkStats: (payload: TrackStats) => dispatch.trkStart.setTrkStats(payload),
 });
 
 export default connect(stateToProps, dispatchToProps)(TrkStartScreen);

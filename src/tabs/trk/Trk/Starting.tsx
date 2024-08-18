@@ -13,11 +13,19 @@ import {
   formatMinutesToTime,
 } from '../../../utils/format';
 import {useFocusEffect} from '@react-navigation/native';
-import { ErrorNotification, SuccessNotification, WarnNotification } from "../../../utils/notification";
+import {
+  ErrorNotification,
+  SuccessAlert,
+  SuccessNotification,
+  WarnAlert,
+  WarnNotification
+} from "../../../utils/notification";
+import { trkStats } from "../../../utils/trk/TrackStats";
+import { Location, LocationType, ReGeocode } from "react-native-amap-geolocation/src/types.ts";
 
 const TrkStartingScreen = (props: any) => {
   const [showBtn, setShowBtn] = useState(false);
-  const {startLocation, stopLocation} = GeoLocation();
+  const {startLocation, stopLocation, addLocationListen} = GeoLocation();
   const [totalTimeShowVal, setTotalTimeShowVal] = useState('00:00');
   const [totalDistanceVal, setTotalDistanceVal] = useState('0.0');
   const [totalAscentVal, setTotalAscentVal] = useState('0');
@@ -60,6 +68,9 @@ const TrkStartingScreen = (props: any) => {
 
   useFocusEffect(
     React.useCallback(() => {
+      if (!props.trkStart.trkStats.hasOwnProperty('totalDistance')) {
+        return;
+      }
       const {
         totalDistance,
         totalTime,
@@ -70,7 +81,7 @@ const TrkStartingScreen = (props: any) => {
         currentKilometerSpeed,
         currentAltitude,
         finalPointIsPaused,
-      } = calculateTrkStats(props.trkStart.points);
+      } = props.trkStart.trkStats;
 
       setTotalDistanceVal((totalDistance / 1000).toFixed(2));
       setTotalAscentVal(totalAscent.toFixed(0));
@@ -82,7 +93,7 @@ const TrkStartingScreen = (props: any) => {
       totalTimeVal.current = totalTime;
       timerBaseTime.current = new Date().getTime() - totalTime;
       console.log('ret', finalPointIsPaused, totalTimeEndTime, totalTime);
-    }, [props.trkStart.points]),
+    }, [props.trkStart.trkStats]),
   );
 
   const handleSheetChanges = (index: number) => {
@@ -90,25 +101,66 @@ const TrkStartingScreen = (props: any) => {
     setShowBtn(index === 1);
   };
   const bottomSheetRef = useRef(null);
-
   const pauseHandle = () => {
     if (props.trkStart.pause) {
       props.setPause(false);
-      startLocation();
-    } else {
-      props.setPause(true);
-      stopLocation();
-      // 使用上个点保留一个暂停点
-      const currentTrkPoint = {
-        latitude: props.trkStart.currentPoint.latitude || 0,
-        longitude: props.trkStart.currentPoint.longitude || 0,
-        altitude: props.trkStart.currentPoint.altitude || 0,
-        speed: 0,
-        time: new Date().getTime(),
+      // 添加暂停的标识点
+      const point = trkStats.processPoint({
+        time: new Date().toISOString(),
         pause: true,
-      };
-      props.addTrkPoint(currentTrkPoint);
-      props.setCurrentPoint(currentTrkPoint);
+      });
+      const stats = trkStats.getStats();
+      props.addTrkPoint(point);
+      props.setTrkStats(stats);
+      stopLocation();
+      addLocationListen((location: Location & ReGeocode) => {
+        console.log('location', location);
+        if (location.errorCode) {
+          ErrorNotification('定位失败', location.errorInfo || '');
+          return;
+        }
+        if (location.locationType !== LocationType.GPS) {
+          WarnAlert('GPS定位信号弱，请移动至开阔地带');
+          return;
+        }
+        // 记录第一个点的位置详情
+        if (props.trkStart.locationInfo.address === undefined) {
+          props.setLocationInfo({
+            address: location.address,
+            country: location.country,
+            city: location.city,
+            adCode: location.adCode,
+          });
+        }
+        // 处理后的point
+        const point = trkStats.processPoint({
+          latitude: location.latitude,
+          longitude: location.longitude,
+          altitude: location.altitude,
+          speed: location.speed,
+          time: new Date(location.timestamp || 0).toISOString(),
+          pause: false,
+          gpsAccuracy: location.gpsAccuracy,
+          accuracy: location.accuracy,
+        });
+        const stats = trkStats.getStats();
+        props.checkAddTrkPoint(point);
+        props.setTrkStats(stats);
+      });
+      startLocation();
+      SuccessAlert('记录继续');
+    } else {
+      stopLocation();
+      // 添加暂停的标识点
+      const point = trkStats.processPoint({
+        time: new Date().toISOString(),
+        pause: true,
+      });
+      const stats = trkStats.getStats();
+      props.addTrkPoint(point);
+      props.setTrkStats(stats);
+      props.setPause(true);
+      SuccessAlert('记录暂停');
     }
   };
   const stopHandle = () => {
@@ -154,17 +206,18 @@ const TrkStartingScreen = (props: any) => {
           <View style={styles.startItemRow}>
             <View style={styles.startItemColumnLeft}>
               <Text style={styles.startItemValue}>
-                {totalTimeShowVal}
-                <Text style={styles.startItemUnit} />
-              </Text>
-              <Text style={styles.startItemLabel}>时间</Text>
-            </View>
-            <View style={styles.startItemColumn}>
-              <Text style={styles.startItemValue}>
                 {totalDistanceVal}
                 <Text style={styles.startItemUnit}> km</Text>
               </Text>
               <Text style={styles.startItemLabel}>距离</Text>
+            </View>
+            <View style={styles.startItemColumn}>
+              <Text style={styles.startItemValue}>
+                {totalTimeShowVal}
+                <Text style={styles.startItemUnit} />
+              </Text>
+              <Text style={styles.startItemLabel}>时间</Text>
+
             </View>
             <View style={styles.startItemColumnRight}>
               <Text style={styles.startItemValue}>
@@ -261,7 +314,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    paddingLeft: 10,
   },
   startItemColumnRight: {
     width: '20%',
@@ -281,17 +333,20 @@ const styles = StyleSheet.create({
 
   startItemValue: {
     color: '#000000',
-    fontSize: 32,
-    fontWeight: '500',
+    fontSize: 27,
+    fontWeight: '600',
+    fontFamily: 'Montserrat',
   },
   startItemUnit: {
     color: '#696969',
     fontSize: 14,
     fontWeight: '400',
+    fontFamily: 'Montserrat',
   },
   startItemLabel: {
     color: '#696969',
     fontSize: 14,
+    fontFamily: 'Montserrat',
   },
 
   startItemOpContainer: {
@@ -353,6 +408,10 @@ const dispatchToProps = dispatch => ({
   setCurrentPoint: (payload: any) => dispatch.trkStart.setCurrentPoint(payload),
   asyncAddFromRecord: (payload: any) =>
     dispatch.recordList.asyncAddFromRecord(payload),
+  setTrkStats: (payload: any) => dispatch.trkStart.setTrkStats(payload),
+  checkAddTrkPoint: (payload: any) =>
+    dispatch.trkStart.checkAddTrkPoint(payload),
+  setLocationInfo: (payload: any) => dispatch.trkStart.setLocationInfo(payload),
 });
 
 export default connect(stateToProps, dispatchToProps)(TrkStartingScreen);
